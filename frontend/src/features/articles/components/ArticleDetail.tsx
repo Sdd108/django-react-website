@@ -1,3 +1,11 @@
+/*
+ * @Author: “Zhipeng “zhipengmail@qq.com”
+ * @Date: 2024-12-19 19:01:57
+ * @LastEditors: “Zhipeng “zhipengmail@qq.com”
+ * @LastEditTime: 2024-12-19 21:38:25
+ * @FilePath: /django-react-website/frontend/src/components/Article.tsx
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ */
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import axios from "axios";
@@ -40,6 +48,7 @@ const Article = () => {
     };
 
     fetchArticle();
+    window.scrollTo(0, 0);
   }, [id]);
 
   if (loading) return <div>Loading article...</div>;
@@ -47,8 +56,8 @@ const Article = () => {
   if (!article) return <div>Article not found</div>;
 
   return (
-    <div className="article-detail">
-      <Link to="/" className="back-link">
+    <div className="article-detail pt-8">
+      <Link to="/articles" className="back-link">
         ← Back to Articles
       </Link>
       <h1>{article.title}</h1>

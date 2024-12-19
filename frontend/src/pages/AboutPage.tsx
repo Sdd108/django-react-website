@@ -2,11 +2,11 @@
  * @Author: “Zhipeng “zhipengmail@qq.com”
  * @Date: 2024-12-19 19:48:41
  * @LastEditors: “Zhipeng “zhipengmail@qq.com”
- * @LastEditTime: 2024-12-19 19:50:40
+ * @LastEditTime: 2024-12-19 21:24:53
  * @FilePath: /django-react-website/frontend/src/pages/About.tsx
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
-import { Typography, Card, Avatar, Space, Divider } from "antd";
+import { Typography, Card, Avatar, Space } from "antd";
 import {
   GithubOutlined,
   LinkedinOutlined,
@@ -17,7 +17,7 @@ const { Title, Paragraph, Link } = Typography;
 
 const About = () => {
   return (
-    <div className="max-w-4xl mx-auto py-8 px-4">
+    <div className="space-y-12 py-8 w-full">
       <div className="text-center mb-8">
         <Avatar
           size={160}

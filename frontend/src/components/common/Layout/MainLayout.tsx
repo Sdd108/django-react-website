@@ -24,7 +24,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
   ];
 
   return (
-    <Layout className="min-h-screen">
+    <Layout>
       <Header
         className="w-full z-10 px-4 flex items-center fixed top-0 left-0"
         style={{ background: "#001529" }}
@@ -47,7 +47,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
           />
         </div>
       </Header>
-      <Content className="mt-16 pb-16 min-h-screen">
+      <Content className="min-h-screen" style={{ marginTop: 64 }}>
         <div className="max-w-7xl mx-auto px-4">{children}</div>
       </Content>
       <Footer className="text-center bg-gray-100">

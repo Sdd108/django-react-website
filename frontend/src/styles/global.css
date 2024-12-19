@@ -5,6 +5,8 @@
 /* Layout styles */
 .ant-layout {
     min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
 .ant-layout-header {
@@ -16,6 +18,11 @@
     left: 0;
     right: 0;
     z-index: 1000;
+}
+
+.ant-layout-content {
+    flex: 1;
+    padding: 24px 0;
 }
 
 .ant-layout-header>div {
@@ -87,7 +94,7 @@
 .article-detail {
     max-width: 800px;
     margin: 0 auto;
-    padding: 20px;
+    padding: 0 20px;
 }
 
 .back-link {

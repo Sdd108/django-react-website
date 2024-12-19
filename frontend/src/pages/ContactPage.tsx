@@ -33,20 +33,20 @@ const Contact = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto py-8 px-4">
+    <div className="max-w-xl mx-auto py-12 px-4">
       <h1 className="text-3xl font-bold text-center mb-8">Contact Me</h1>
       <Form
         form={form}
         layout="vertical"
         onFinish={onFinish}
-        className="space-y-4"
+        className="space-y-6 bg-white p-8 rounded-lg shadow-sm"
       >
         <Form.Item
           name="name"
           label="Name"
           rules={[{ required: true, message: "Please enter your name" }]}
         >
-          <Input size="large" placeholder="Your name" />
+          <Input size="large" placeholder="Your name" className="max-w-md" />
         </Form.Item>
 
         <Form.Item
@@ -57,7 +57,7 @@ const Contact = () => {
             { type: "email", message: "Please enter a valid email" },
           ]}
         >
-          <Input size="large" placeholder="Your email" />
+          <Input size="large" placeholder="Your email" className="max-w-md" />
         </Form.Item>
 
         <Form.Item
@@ -70,7 +70,11 @@ const Contact = () => {
             },
           ]}
         >
-          <Input size="large" placeholder="Your phone number (optional)" />
+          <Input
+            size="large"
+            placeholder="Your phone number (optional)"
+            className="max-w-md"
+          />
         </Form.Item>
 
         <Form.Item
@@ -83,6 +87,7 @@ const Contact = () => {
             placeholder="What would you like to say?"
             maxLength={1000}
             showCount
+            className="resize-none"
           />
         </Form.Item>
 
@@ -91,7 +96,7 @@ const Contact = () => {
             type="primary"
             htmlType="submit"
             size="large"
-            block
+            className="w-full md:w-auto px-8"
             loading={loading}
           >
             Send Message
