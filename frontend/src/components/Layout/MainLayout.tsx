@@ -1,0 +1,60 @@
+import { Layout, Menu } from "antd";
+import { Link, useLocation } from "react-router-dom";
+import {
+  HomeOutlined,
+  FileTextOutlined,
+  UserOutlined,
+  MailOutlined,
+} from "@ant-design/icons";
+
+const { Header, Content, Footer } = Layout;
+
+interface MainLayoutProps {
+  children: React.ReactNode;
+}
+
+const MainLayout = ({ children }: MainLayoutProps) => {
+  const location = useLocation();
+
+  const menuItems = [
+    { key: "/", label: "Home", icon: <HomeOutlined /> },
+    { key: "/articles", label: "Articles", icon: <FileTextOutlined /> },
+    { key: "/about", label: "About", icon: <UserOutlined /> },
+    { key: "/contact", label: "Contact", icon: <MailOutlined /> },
+  ];
+
+  return (
+    <Layout className="min-h-screen">
+      <Header
+        className="fixed w-full z-10 px-4 flex items-center"
+        style={{ background: "#001529" }}
+      >
+        <div className="flex items-center justify-between max-w-7xl mx-auto">
+          <Link to="/" className="text-white text-2xl font-bold">
+            @sruta.cn
+          </Link>
+          <Menu
+            theme="dark"
+            mode="horizontal"
+            selectedKeys={[location.pathname]}
+            className="flex-1 justify-end bg-transparent border-none"
+            style={{ minWidth: "400px" }}
+            items={menuItems.map((item) => ({
+              key: item.key,
+              icon: item.icon,
+              label: <Link to={item.key}>{item.label}</Link>,
+            }))}
+          />
+        </div>
+      </Header>
+      <Content className="pt-16 pb-16 min-h-screen">
+        <div className="max-w-7xl mx-auto px-4">{children}</div>
+      </Content>
+      <Footer className="text-center bg-gray-100">
+        ©{new Date().getFullYear()} @sruta.cn All rights reserved.
+      </Footer>
+    </Layout>
+  );
+};
+
+export default MainLayout;
