@@ -26,7 +26,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
   return (
     <Layout className="min-h-screen">
       <Header
-        className="fixed w-full z-10 px-4 flex items-center"
+        className="w-full z-10 px-4 flex items-center fixed top-0 left-0"
         style={{ background: "#001529" }}
       >
         <div className="flex items-center justify-between max-w-7xl mx-auto">
@@ -37,7 +37,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
             theme="dark"
             mode="horizontal"
             selectedKeys={[location.pathname]}
-            className="flex-1 justify-end bg-transparent border-none"
+            className="flex-1 justify-end bg-transparent border-none ml-auto"
             style={{ minWidth: "400px" }}
             items={menuItems.map((item) => ({
               key: item.key,
@@ -47,7 +47,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
           />
         </div>
       </Header>
-      <Content className="pt-16 pb-16 min-h-screen">
+      <Content className="mt-16 pb-16 min-h-screen">
         <div className="max-w-7xl mx-auto px-4">{children}</div>
       </Content>
       <Footer className="text-center bg-gray-100">

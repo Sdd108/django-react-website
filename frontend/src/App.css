@@ -11,12 +11,20 @@
     padding: 0 24px !important;
     height: 64px;
     width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
 }
 
 .ant-layout-header>div {
     width: 100%;
     max-width: 1280px;
     margin: 0 auto;
+    height: 100%;
+    display: flex;
+    align-items: center;
 }
 
 /* Menu styles */
@@ -107,4 +115,9 @@
     margin-top: 30px;
     padding-top: 20px;
     border-top: 1px solid #eaeaea;
+}
+
+.ant-menu {
+    line-height: 64px;
+    border-bottom: none !important;
 }
