@@ -2,7 +2,7 @@
  * @Author: “Zhipeng “zhipengmail@qq.com”
  * @Date: 2024-12-19 17:15:12
  * @LastEditors: “Zhipeng “zhipengmail@qq.com”
- * @LastEditTime: 2024-12-19 19:02:12
+ * @LastEditTime: 2024-12-19 22:36:59
  * @FilePath: /django-react-website/frontend/src/components/ArticleBox.tsx
  * @Description: Article list component that displays a list of articles fetched from the API
  */
@@ -29,7 +29,7 @@ const ArticleBox = () => {
       try {
         setLoading(true);
         const response = await axios.get<Article[]>(
-          "http://localhost:8000/api/articles/"
+          `${import.meta.env.VITE_API_BASE_URL}/api/articles/`
         );
         setArticles(response.data);
         setError(null);

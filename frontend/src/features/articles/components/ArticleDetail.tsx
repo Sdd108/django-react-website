@@ -2,7 +2,7 @@
  * @Author: “Zhipeng “zhipengmail@qq.com”
  * @Date: 2024-12-19 19:01:57
  * @LastEditors: “Zhipeng “zhipengmail@qq.com”
- * @LastEditTime: 2024-12-19 21:38:25
+ * @LastEditTime: 2024-12-19 22:10:56
  * @FilePath: /django-react-website/frontend/src/components/Article.tsx
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -32,7 +32,7 @@ const Article = () => {
       try {
         setLoading(true);
         const response = await axios.get<ArticleType>(
-          `http://localhost:8000/api/articles/${id}/`
+          `${import.meta.env.VITE_API_BASE_URL}/api/articles/${id}/`
         );
         setArticle(response.data);
         setError(null);

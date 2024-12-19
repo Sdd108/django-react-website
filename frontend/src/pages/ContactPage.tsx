@@ -18,7 +18,10 @@ const Contact = () => {
   const onFinish = async (values: ContactForm) => {
     setLoading(true);
     try {
-      await axios.post("http://localhost:8000/api/contact/", values);
+      await axios.post(
+        `${import.meta.env.VITE_API_BASE_URL}/api/contact/`,
+        values
+      );
       message.success("Message sent successfully!");
       form.resetFields();
     } catch (error) {

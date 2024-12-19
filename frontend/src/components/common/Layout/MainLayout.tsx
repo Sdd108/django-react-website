@@ -31,7 +31,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
       >
         <div className="flex items-center justify-between max-w-7xl mx-auto">
           <Link to="/" className="text-white text-2xl font-bold">
-            @sruta.cn
+            SRUTA
           </Link>
           <Menu
             theme="dark"
