@@ -24,8 +24,6 @@ def index(request):
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('api.urls')),
-    
-    # Choose one of these options:
-    path('', index),  # Option 1: Show API information
-    # path('', RedirectView.as_view(url='/api/')),  # Option 2: Redirect to API
+    path('api/contact/', include('contact_message.urls')),
+    path('', index),
 ] 
