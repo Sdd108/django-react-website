@@ -11,6 +11,8 @@ import MainLayout from "./components/Layout/MainLayout";
 import Home from "./pages/Home";
 import ArticleBox from "./components/ArticleBox";
 import Article from "./components/Article";
+import Contact from "./pages/Contact";
+import About from "./pages/About";
 import "./App.css";
 
 function App() {
@@ -21,11 +23,8 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/articles" element={<ArticleBox />} />
           <Route path="/article/:id" element={<Article />} />
-          <Route path="/about" element={<div>About Page (Coming Soon)</div>} />
-          <Route
-            path="/contact"
-            element={<div>Contact Page (Coming Soon)</div>}
-          />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
         </Routes>
       </MainLayout>
     </Router>
