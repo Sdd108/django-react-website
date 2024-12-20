@@ -2,7 +2,7 @@
  * @Author: “Zhipeng “zhipengmail@qq.com”
  * @Date: 2024-12-19 19:18:28
  * @LastEditors: “Zhipeng “zhipengmail@qq.com”
- * @LastEditTime: 2024-12-19 21:27:01
+ * @LastEditTime: 2024-12-20 10:26:42
  * @FilePath: /django-react-website/frontend/src/pages/Home.tsx
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -38,8 +38,8 @@ const Home = () => {
     <div className="space-y-12 py-8 w-full">
       {/* Hero Section */}
       <div className="text-center space-y-4 px-4">
-        <Title level={1}>
-          Welcome to <span className="text-blue-500">@sruta.cn</span>
+        <Title level={1} className="welcome-heading">
+          Welcome to <span className="highlight">@sruta.cn</span>
         </Title>
         <Paragraph className="text-lg text-gray-600 max-w-2xl mx-auto">
           Exploring the world of web development through comprehensive articles

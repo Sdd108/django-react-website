@@ -6,6 +6,7 @@ import {
   UserOutlined,
   MailOutlined,
 } from "@ant-design/icons";
+import ThemeSwitch from "../ThemeSwitch";
 
 const { Header, Content, Footer } = Layout;
 
@@ -25,26 +26,26 @@ const MainLayout = ({ children }: MainLayoutProps) => {
 
   return (
     <Layout>
-      <Header
-        className="w-full z-10 px-4 flex items-center fixed top-0 left-0"
-        style={{ background: "#001529" }}
-      >
+      <Header className="w-full z-10 px-4 flex items-center fixed top-0 left-0">
         <div className="flex items-center justify-between max-w-7xl mx-auto">
           <Link to="/" className="text-white text-2xl font-bold">
             SRUTA
           </Link>
-          <Menu
-            theme="dark"
-            mode="horizontal"
-            selectedKeys={[location.pathname]}
-            className="flex-1 justify-end bg-transparent border-none ml-auto"
-            style={{ minWidth: "400px" }}
-            items={menuItems.map((item) => ({
-              key: item.key,
-              icon: item.icon,
-              label: <Link to={item.key}>{item.label}</Link>,
-            }))}
-          />
+          <div className="flex items-center">
+            <Menu
+              theme="dark"
+              mode="horizontal"
+              selectedKeys={[location.pathname]}
+              className="flex-1 justify-end bg-transparent border-none ml-auto"
+              style={{ minWidth: "400px" }}
+              items={menuItems.map((item) => ({
+                key: item.key,
+                icon: item.icon,
+                label: <Link to={item.key}>{item.label}</Link>,
+              }))}
+            />
+            <ThemeSwitch />
+          </div>
         </div>
       </Header>
       <Content className="min-h-screen" style={{ marginTop: 64 }}>

@@ -42,7 +42,7 @@ const Contact = () => {
         form={form}
         layout="vertical"
         onFinish={onFinish}
-        className="space-y-6 bg-white p-8 rounded-lg shadow-sm"
+        className="space-y-6 p-8 rounded-lg shadow-sm"
       >
         <Form.Item
           name="name"

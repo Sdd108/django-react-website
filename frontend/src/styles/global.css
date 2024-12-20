@@ -7,6 +7,8 @@
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    background-color: var(--body-bg);
+    transition: background-color 0.3s ease;
 }
 
 .ant-layout-header {
@@ -18,11 +20,13 @@
     left: 0;
     right: 0;
     z-index: 1000;
+    background-color: var(--header-bg) !important;
 }
 
 .ant-layout-content {
     flex: 1;
     padding: 24px 0;
+    background-color: var(--body-bg);
 }
 
 .ant-layout-header>div {
@@ -53,22 +57,25 @@
 .article {
     margin-bottom: 2rem;
     padding: 1.5rem;
-    border: 1px solid #eaeaea;
+    border: 1px solid var(--border-color);
     border-radius: 8px;
-    background-color: #fff;
+    background-color: var(--card-bg);
     width: 100%;
+    transition: all 0.3s ease;
 }
 
 .article h2 {
     margin: 0 0 1rem;
-    color: #333;
+    color: var(--article-title);
+    transition: color 0.3s ease;
 }
 
 .article-meta {
     display: flex;
     justify-content: space-between;
     margin-top: 1rem;
-    color: #666;
+    color: var(--article-meta);
+    transition: color 0.3s ease;
 }
 
 .article-meta a {
@@ -89,6 +96,7 @@
 .article-link:hover {
     transform: translateY(-2px);
     transition: transform 0.2s ease;
+    text-decoration: none;
 }
 
 .article-detail {
@@ -127,4 +135,341 @@
 .ant-menu {
     line-height: 64px;
     border-bottom: none !important;
+}
+
+:root[data-theme='light'] {
+    --bg-primary: #ffffff;
+    --text-primary: #000000;
+    --card-bg: #ffffff;
+    --border-color: #eaeaea;
+    --article-title: #333333;
+    --article-meta: #666666;
+    --link-color: #0066cc;
+    --footer-bg: #f5f5f5;
+    --body-bg: #f0f2f5;
+    --header-bg: #001529;
+    --heading-color: #333333;
+    --welcome-text: #262626;
+    --welcome-highlight: #1890ff;
+    --article-content: #333333;
+    --article-preview: #4a4a4a;
+    --card-text: #4a4a4a;
+    --card-shadow: rgba(0, 0, 0, 0.1);
+    --about-text: #4a4a4a;
+    --about-meta: #666666;
+    --about-link: #0066cc;
+    --about-title: #262626;
+    --about-description: #666666;
+    --about-skill-text: #4a4a4a;
+    --list-text: #4a4a4a;
+    --pagination-text: #262626;
+    --pagination-active-bg: #1890ff;
+    --pagination-active-text: #ffffff !important;
+    --pagination-hover-bg: #fafafa;
+    --pagination-active-border: #1890ff;
+    --form-bg: #ffffff;
+    --form-label: #262626;
+    --form-input-bg: #ffffff;
+    --form-input-border: #d9d9d9;
+    --form-input-text: #262626;
+    --form-input-placeholder: #8c8c8c;
+}
+
+:root[data-theme='dark'] {
+    --bg-primary: #1f1f1f;
+    --text-primary: #ffffff;
+    --card-bg: #2d2d2d;
+    --border-color: #404040;
+    --article-title: #ffffff;
+    --article-meta: #b3b3b3;
+    --link-color: #4d9eff;
+    --footer-bg: #2d2d2d;
+    --body-bg: #141414;
+    --header-bg: #001529;
+    --heading-color: #cacaca;
+    --welcome-text: #cacaca;
+    --welcome-highlight: #4d9eff;
+    --article-content: #d1d5db;
+    --article-preview: #d1d5db;
+    --card-text: #d1d5db;
+    --card-shadow: rgba(0, 0, 0, 0.3);
+    --about-text: #cacaca;
+    --about-meta: #b3b3b3;
+    --about-link: #4d9eff;
+    --about-title: #ffffff;
+    --about-description: #b3b3b3;
+    --about-skill-text: #d1d5db;
+    --list-text: #cacaca;
+    --pagination-text: #cacaca;
+    --pagination-active-bg: #177ddc;
+    --pagination-active-text: #ffffff !important;
+    --pagination-hover-bg: #1f1f1f;
+    --pagination-active-border: #177ddc;
+    --pagination-hover-border: #177ddc;
+    --pagination-shadow: rgba(23, 125, 220, 0.2);
+    --form-bg: #2d2d2d;
+    --form-label: #cacaca;
+    --form-input-bg: #1f1f1f;
+    --form-input-border: #434343;
+    --form-input-text: #cacaca;
+    --form-input-placeholder: #666666;
+}
+
+body {
+    background-color: var(--body-bg);
+    color: var(--text-primary);
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.article {
+    background-color: var(--card-bg);
+    border-color: var(--border-color);
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.article h2 {
+    color: var(--article-title);
+}
+
+.article-meta {
+    color: var(--article-meta);
+}
+
+.article-meta a,
+.back-link {
+    color: var(--link-color);
+}
+
+.ant-layout-footer {
+    background-color: var(--footer-bg);
+    color: var(--text-primary);
+}
+
+.ant-card {
+    background-color: var(--card-bg);
+    border-color: var(--border-color);
+    box-shadow: 0 2px 8px var(--card-shadow);
+    transition: all 0.3s ease;
+}
+
+.ant-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px var(--card-shadow);
+}
+
+.ant-card .ant-typography {
+    color: var(--card-text);
+    transition: color 0.3s ease;
+}
+
+.ant-typography.ant-typography-secondary {
+    color: var(--article-meta);
+}
+
+.text-blue-500 {
+    color: var(--link-color) !important;
+}
+
+/* Typography styles */
+h1,
+h1.ant-typography {
+    color: var(--heading-color) !important;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+h1.page-title {
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+/* Add more theme-aware styles as needed */
+.article-content {
+    line-height: 1.6;
+    margin: 20px 0;
+    color: var(--article-content);
+    transition: color 0.3s ease;
+}
+
+.article-detail {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 20px;
+    background-color: var(--card-bg);
+    border-radius: 8px;
+    padding: 2rem;
+    margin-top: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+.article p {
+    color: var(--article-preview);
+    transition: color 0.3s ease;
+}
+
+/* About page styles */
+.about-detail {
+    background-color: var(--card-bg);
+    border-radius: 8px;
+    padding: 2rem;
+    margin-top: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+.about-detail .ant-typography {
+    color: var(--about-text);
+    transition: color 0.3s ease;
+}
+
+.about-detail .text-gray-600 {
+    color: var(--about-meta) !important;
+}
+
+.about-detail .ant-space a {
+    color: var(--about-link);
+    font-size: 1.5rem;
+    transition: color 0.3s ease;
+}
+
+.about-detail .ant-space a:hover {
+    color: var(--link-color);
+    opacity: 0.9;
+}
+
+.about-detail h3.ant-typography {
+    color: var(--about-title);
+    margin-bottom: 1rem;
+}
+
+.about-detail ul li {
+    color: var(--about-skill-text);
+    transition: color 0.3s ease;
+}
+
+/* Welcome heading styles */
+.welcome-heading {
+    color: var(--welcome-text) !important;
+    font-size: 2.5rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    transition: color 0.3s ease;
+}
+
+.welcome-heading .highlight {
+    color: var(--welcome-highlight);
+    transition: color 0.3s ease;
+}
+
+/* List styles */
+.list-disc {
+    color: var(--list-text);
+    transition: color 0.3s ease;
+}
+
+.list-disc li {
+    color: var(--list-text);
+    transition: color 0.3s ease;
+    line-height: 1.8;
+}
+
+/* Pagination styles */
+.ant-pagination {
+    color: var(--pagination-text);
+}
+
+.ant-pagination-item {
+    background-color: var(--card-bg);
+    border-color: var(--border-color);
+    transition: all 0.3s ease;
+    border-width: 1px;
+    box-shadow: none;
+}
+
+.ant-pagination-item a {
+    color: var(--pagination-text) !important;
+}
+
+.ant-pagination-item:hover {
+    background-color: var(--pagination-hover-bg);
+    border-color: var(--pagination-hover-border);
+    box-shadow: 0 0 0 2px var(--pagination-shadow);
+}
+
+.ant-pagination-item-active {
+    background-color: var(--pagination-active-bg);
+    border-color: var(--pagination-active-border);
+    border-width: 1px;
+    font-weight: bold;
+    box-shadow: 0 0 0 2px var(--pagination-shadow);
+}
+
+.ant-pagination-item-active a {
+    color: var(--pagination-active-text);
+    font-weight: bold;
+}
+
+.ant-pagination-prev button,
+.ant-pagination-next button {
+    color: var(--pagination-text) !important;
+    background-color: var(--card-bg);
+    border-color: var(--border-color);
+    transition: all 0.3s ease;
+}
+
+.ant-select-selector {
+    background-color: var(--card-bg) !important;
+    border-color: var(--border-color) !important;
+    color: var(--pagination-text) !important;
+}
+
+.ant-select-selection-item {
+    color: var(--pagination-text) !important;
+}
+
+.ant-select-arrow {
+    color: var(--pagination-text) !important;
+}
+
+/* Override Ant Design's default styles */
+.ant-pagination-item-active a,
+.ant-pagination-item-active:hover a {
+    color: var(--pagination-active-text);
+    font-weight: bold;
+}
+
+.ant-pagination-item-active:hover {
+    border-color: var(--pagination-active-border);
+    background-color: var(--pagination-active-bg);
+}
+
+/* Contact form styles */
+.ant-form {
+    background-color: var(--form-bg);
+    transition: background-color 0.3s ease;
+}
+
+.ant-form-item-label>label {
+    color: var(--form-label) !important;
+}
+
+.ant-input,
+.ant-input-textarea {
+    background-color: var(--form-input-bg) !important;
+    border-color: var(--form-input-border) !important;
+    color: var(--form-input-text) !important;
+}
+
+.ant-input::placeholder,
+.ant-input-textarea::placeholder {
+    color: var(--form-input-placeholder) !important;
+}
+
+.ant-input-data-count {
+    color: var(--form-label);
+}
+
+.ant-input-affix-wrapper {
+    background-color: var(--form-input-bg) !important;
+    border-color: var(--form-input-border) !important;
 }
