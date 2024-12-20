@@ -2,13 +2,14 @@
  * @Author: “Zhipeng “zhipengmail@qq.com”
  * @Date: 2024-12-19 19:01:57
  * @LastEditors: “Zhipeng “zhipengmail@qq.com”
- * @LastEditTime: 2024-12-19 22:10:56
+ * @LastEditTime: 2024-12-20 09:13:26
  * @FilePath: /django-react-website/frontend/src/components/Article.tsx
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import axios from "axios";
+import { useScrollPosition } from "@/hooks/useScrollPosition";
 
 interface ArticleType {
   id: number;
@@ -26,6 +27,7 @@ const Article = () => {
   const [article, setArticle] = useState<ArticleType | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { handleBackToArticles } = useScrollPosition();
 
   useEffect(() => {
     const fetchArticle = async () => {
@@ -48,7 +50,7 @@ const Article = () => {
     };
 
     fetchArticle();
-    window.scrollTo(0, 0);
+    window.scrollTo(0, 0); // 滚动到顶部
   }, [id]);
 
   if (loading) return <div>Loading article...</div>;
@@ -57,9 +59,9 @@ const Article = () => {
 
   return (
     <div className="article-detail pt-8">
-      <Link to="/articles" className="back-link">
+      <a href="#" onClick={handleBackToArticles} className="back-link">
         ← Back to Articles
-      </Link>
+      </a>
       <h1>{article.title}</h1>
       <div className="article-meta">
         <p>By {article.author}</p>

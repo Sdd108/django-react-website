@@ -1,87 +1,70 @@
+'''
+Author: “Zhipeng “zhipengmail@qq.com”
+Date: 2024-12-19 18:51:04
+LastEditors: “Zhipeng “zhipengmail@qq.com”
+LastEditTime: 2024-12-20 09:30:56
+FilePath: /django-react-website/backend/articles/management/commands/create_test_articles.py
+Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+'''
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 from articles.models import Article
 from datetime import timedelta
+import random
 
 class Command(BaseCommand):
-    help = 'Creates 10 test articles about cursors'
+    help = 'Creates 55 test articles about various tech topics'
+
+    def get_random_paragraphs(self, num_paragraphs=3):
+        paragraphs = [
+            "In the ever-evolving landscape of technology, understanding the fundamentals of data structures and algorithms remains crucial. These building blocks form the foundation of efficient software development, enabling developers to create scalable and performant applications.",
+            
+            "Modern web development frameworks have revolutionized how we build applications. From React's component-based architecture to Django's batteries-included philosophy, developers now have powerful tools at their disposal.",
+            
+            "Cloud computing has transformed the way we deploy and scale applications. Services like AWS, Azure, and Google Cloud Platform provide robust infrastructure that can adapt to varying workloads.",
+            
+            "The rise of artificial intelligence and machine learning has opened new possibilities in software development. From natural language processing to computer vision, AI is becoming an integral part of modern applications.",
+            
+            "Security considerations in software development cannot be overlooked. Best practices include input validation, proper authentication mechanisms, and regular security audits.",
+            
+            "Database optimization plays a crucial role in application performance. Understanding indexing strategies, query optimization, and caching mechanisms can significantly improve response times.",
+            
+            "Containerization technologies like Docker have simplified application deployment and environment consistency. Kubernetes extends this further by providing robust orchestration capabilities.",
+            
+            "Test-driven development (TDD) has become a standard practice in many development teams. Writing tests first helps ensure code quality and maintainability.",
+            
+            "The JavaScript ecosystem continues to grow with new tools and frameworks. Understanding core concepts like promises, async/await, and state management is essential.",
+            
+            "Python's simplicity and extensive library ecosystem make it a popular choice for various applications. From web development to data science, Python provides powerful tools.",
+        ]
+        return "\n\n".join(random.sample(paragraphs, num_paragraphs))
 
     def handle(self, *args, **kwargs):
-        articles_data = [
-            {
-                'title': 'Understanding Database Cursors in PostgreSQL',
-                'content': 'A database cursor is a control structure that enables traversal over the records in a database. In PostgreSQL, cursors are especially useful when dealing with large result sets, as they allow you to retrieve rows one at a time instead of all at once.',
-                'author': 'Database Expert',
-                'published_date': timezone.now() - timedelta(days=10),
-                'source_url': 'https://example.com/postgres-cursors'
-            },
-            {
-                'title': 'Mouse Cursors in CSS: A Complete Guide',
-                'content': 'CSS provides various cursor properties to customize how the mouse pointer appears when hovering over elements. From basic pointers to custom cursors, this guide covers everything you need to know about cursor styling in web development.',
-                'author': 'Frontend Developer',
-                'published_date': timezone.now() - timedelta(days=9),
-                'source_url': 'https://example.com/css-cursors'
-            },
-            {
-                'title': 'Implementing Custom Cursors in React',
-                'content': 'Learn how to implement custom cursor animations and behaviors in React applications. This tutorial covers cursor tracking, custom cursor components, and interactive cursor effects.',
-                'author': 'React Developer',
-                'published_date': timezone.now() - timedelta(days=8),
-                'source_url': 'https://example.com/react-cursors'
-            },
-            {
-                'title': 'MySQL Cursor Performance Optimization',
-                'content': 'Cursors in MySQL can impact performance if not used properly. This article discusses best practices for optimizing cursor operations and alternatives to consider.',
-                'author': 'Performance Engineer',
-                'published_date': timezone.now() - timedelta(days=7),
-                'source_url': 'https://example.com/mysql-cursors'
-            },
-            {
-                'title': 'Game Development: Custom Cursor Design',
-                'content': 'Creating engaging cursor designs for games can enhance user experience. Learn about cursor animation, state management, and implementation techniques in game development.',
-                'author': 'Game Developer',
-                'published_date': timezone.now() - timedelta(days=6),
-                'source_url': 'https://example.com/game-cursors'
-            },
-            {
-                'title': 'Cursor-based Pagination in GraphQL APIs',
-                'content': 'Explore cursor-based pagination implementation in GraphQL APIs. This approach provides a reliable way to paginate through large datasets while maintaining consistency.',
-                'author': 'Backend Developer',
-                'published_date': timezone.now() - timedelta(days=5),
-                'source_url': 'https://example.com/graphql-cursors'
-            },
-            {
-                'title': 'Advanced T-SQL Cursor Techniques',
-                'content': 'Deep dive into advanced cursor techniques in T-SQL, including fast forward cursors, dynamic cursors, and cursor variables. Learn when and how to use different cursor types effectively.',
-                'author': 'SQL Expert',
-                'published_date': timezone.now() - timedelta(days=4),
-                'source_url': 'https://example.com/tsql-cursors'
-            },
-            {
-                'title': 'Creating Interactive Cursor Effects with JavaScript',
-                'content': 'Learn to create engaging cursor effects using vanilla JavaScript. Topics include cursor tracking, magnetic effects, and custom cursor trails.',
-                'author': 'JavaScript Developer',
-                'published_date': timezone.now() - timedelta(days=3),
-                'source_url': 'https://example.com/js-cursors'
-            },
-            {
-                'title': 'Cursor Management in MongoDB Aggregation',
-                'content': 'Understanding cursor behavior in MongoDB aggregation pipelines. Learn about cursor methods, batch processing, and memory considerations.',
-                'author': 'MongoDB Specialist',
-                'published_date': timezone.now() - timedelta(days=2),
-                'source_url': 'https://example.com/mongodb-cursors'
-            },
-            {
-                'title': 'Accessibility Considerations for Custom Cursors',
-                'content': 'When implementing custom cursors, accessibility should be a priority. Learn about WCAG guidelines, user preferences, and ensuring cursor visibility for all users.',
-                'author': 'Accessibility Expert',
-                'published_date': timezone.now() - timedelta(days=1),
-                'source_url': 'https://example.com/accessible-cursors'
-            },
+        topics = [
+            ("Understanding Database Indexing", "Database Expert"),
+            ("Modern JavaScript Features", "Frontend Developer"),
+            ("Python Best Practices", "Python Developer"),
+            ("React Component Patterns", "React Developer"),
+            ("API Security Guidelines", "Security Engineer"),
+            ("Cloud Deployment Strategies", "DevOps Engineer"),
+            ("Machine Learning Basics", "AI Researcher"),
+            ("Web Performance Optimization", "Performance Engineer"),
+            ("Docker Container Management", "DevOps Specialist"),
+            ("GraphQL vs REST", "Backend Developer"),
         ]
 
-        for article_data in articles_data:
-            Article.objects.create(**article_data)
+        for i in range(55):
+            topic, author = random.choice(topics)
+            title = f"{topic} - Part {(i // 10) + 1}"
+            
+            article = Article.objects.create(
+                title=title,
+                content=self.get_random_paragraphs(random.randint(3, 5)),
+                author=author,
+                published_date=timezone.now() - timedelta(days=i),
+                source_url=f'https://example.com/articles/{i+1}'
+            )
+            
             self.stdout.write(
-                self.style.SUCCESS(f'Successfully created article: {article_data["title"]}')
+                self.style.SUCCESS(f'Successfully created article: {title}')
             ) 
