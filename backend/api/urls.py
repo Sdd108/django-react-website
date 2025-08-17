@@ -8,4 +8,4 @@ router.register(r'articles', ArticleViewSet)
 # The API URLs are determined automatically by the router
 urlpatterns = [
     path('', include(router.urls)),  # This will include the root API view
-] 
+]
