@@ -1,11 +1,3 @@
-/*
- * @Author: “Zhipeng “zhipengmail@qq.com”
- * @Date: 2024-12-19 17:15:12
- * @LastEditors: “Zhipeng “zhipengmail@qq.com”
- * @LastEditTime: 2024-12-20 09:38:43
- * @FilePath: /django-react-website/frontend/src/components/ArticleBox.tsx
- * @Description: Article list component that displays a list of articles fetched from the API
- */
 import { Link, useSearchParams, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { Pagination } from "antd";
