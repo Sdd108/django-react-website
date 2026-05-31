@@ -41,6 +41,20 @@ scrapy crawl article_spider
 - Frontend: `cd frontend && npm test`
 - Always run both suites after changes touching shared interfaces, serializers, or API contracts.
 
+### Autonomous Test Generation
+
+When asked to write or expand tests, act as an autonomous test engineer: for every Python file in the backend and every TypeScript/React file in the frontend, generate corresponding unit tests. Requirements:
+
+1. Use pytest for Django and Vitest for React
+2. Target 90%+ branch coverage
+3. Run tests after each batch
+4. If any test fails, debug the failure and fix either the test or the source code
+5. Iterate until all tests pass
+6. Track which edge cases are covered and report uncovered scenarios
+7. Suggest architectural improvements if you encounter untestable code
+
+Execute this autonomously — do not stop to ask for approval on individual fixes.
+
 ## Architecture
 
 ### Backend — Django + DRF (SQLite)
