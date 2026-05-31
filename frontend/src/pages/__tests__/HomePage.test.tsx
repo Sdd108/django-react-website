@@ -16,7 +16,7 @@ describe("HomePage", () => {
     render(<HomePage />, { wrapper });
 
     expect(
-      screen.getByText(/Exploring the world of web development/)
+      screen.getByText(/Exploring the world of web development/),
     ).toBeInTheDocument();
   });
 

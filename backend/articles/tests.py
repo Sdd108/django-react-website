@@ -5,6 +5,7 @@ from rest_framework import status
 from .models import Article
 from datetime import datetime
 
+
 class ArticleModelTests(TestCase):
     def setUp(self):
         self.article = Article.objects.create(
@@ -12,7 +13,7 @@ class ArticleModelTests(TestCase):
             content="This is a test article content",
             author="Test Author",
             published_date=datetime.now(),
-            source_url="https://example.com/test"
+            source_url="https://example.com/test",
         )
 
     def test_article_creation(self):
@@ -28,6 +29,7 @@ class ArticleModelTests(TestCase):
         self.assertTrue(isinstance(self.article.published_date, datetime))
         self.assertEqual(self.article.source_url, "https://example.com/test")
 
+
 class ArticleAPITests(APITestCase):
     def setUp(self):
         # Create test articles
@@ -36,33 +38,33 @@ class ArticleAPITests(APITestCase):
             content="Content for first test article",
             author="Test Author 1",
             published_date=datetime.now(),
-            source_url="https://example.com/test1"
+            source_url="https://example.com/test1",
         )
         self.article2 = Article.objects.create(
             title="Second Test Article",
             content="Content for second test article",
             author="Test Author 2",
             published_date=datetime.now(),
-            source_url="https://example.com/test2"
+            source_url="https://example.com/test2",
         )
 
     def test_get_articles_list(self):
         """Test getting list of articles"""
-        url = reverse('article-list')
+        url = reverse("article-list")
         response = self.client.get(url)
-        
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data['results']), 2)
-        self.assertEqual(response.data['count'], 2)
+        self.assertEqual(len(response.data["results"]), 2)
+        self.assertEqual(response.data["count"], 2)
 
     def test_get_article_detail(self):
         """Test getting single article detail"""
-        url = reverse('article-detail', args=[self.article1.id])
+        url = reverse("article-detail", args=[self.article1.id])
         response = self.client.get(url)
-        
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['title'], self.article1.title)
-        self.assertEqual(response.data['author'], self.article1.author)
+        self.assertEqual(response.data["title"], self.article1.title)
+        self.assertEqual(response.data["author"], self.article1.author)
 
     def test_article_pagination(self):
         """Test article pagination"""
@@ -73,31 +75,32 @@ class ArticleAPITests(APITestCase):
                 content=f"Content {i}",
                 author=f"Author {i}",
                 published_date=datetime.now(),
-                source_url=f"https://example.com/test{i}"
+                source_url=f"https://example.com/test{i}",
             )
 
-        url = reverse('article-list')
-        response = self.client.get(url, {'page': 1, 'page_size': 10})
-        
+        url = reverse("article-list")
+        response = self.client.get(url, {"page": 1, "page_size": 10})
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data['results']), 10)
-        self.assertEqual(response.data['count'], 17)  # 15 + 2 from setUp
+        self.assertEqual(len(response.data["results"]), 10)
+        self.assertEqual(response.data["count"], 17)  # 15 + 2 from setUp
 
     def test_invalid_article_detail(self):
         """Test getting detail of non-existent article"""
-        url = reverse('article-detail', args=[999])  # Non-existent ID
+        url = reverse("article-detail", args=[999])  # Non-existent ID
         response = self.client.get(url)
-        
+
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_article_search(self):
         """Test article search functionality"""
-        url = reverse('article-list')
-        response = self.client.get(url, {'search': 'First'})
-        
+        url = reverse("article-list")
+        response = self.client.get(url, {"search": "First"})
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data['results']), 1)
-        self.assertEqual(response.data['results'][0]['title'], "First Test Article")
+        self.assertEqual(len(response.data["results"]), 1)
+        self.assertEqual(response.data["results"][0]["title"], "First Test Article")
+
 
 class ArticleFilterTests(APITestCase):
     def setUp(self):
@@ -107,31 +110,31 @@ class ArticleFilterTests(APITestCase):
                 content="Python content",
                 author="Python Author",
                 published_date=datetime.now(),
-                source_url="https://example.com/python"
+                source_url="https://example.com/python",
             ),
             Article.objects.create(
                 title="Django Article",
                 content="Django content",
                 author="Django Author",
                 published_date=datetime.now(),
-                source_url="https://example.com/django"
-            )
+                source_url="https://example.com/django",
+            ),
         ]
 
     def test_filter_by_author(self):
         """Test filtering articles by author"""
-        url = reverse('article-list')
-        response = self.client.get(url, {'author': 'Python Author'})
-        
+        url = reverse("article-list")
+        response = self.client.get(url, {"author": "Python Author"})
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data['results']), 1)
-        self.assertEqual(response.data['results'][0]['author'], "Python Author")
+        self.assertEqual(len(response.data["results"]), 1)
+        self.assertEqual(response.data["results"][0]["author"], "Python Author")
 
     def test_filter_by_title(self):
         """Test filtering articles by title"""
-        url = reverse('article-list')
-        response = self.client.get(url, {'title': 'Django Article'})
+        url = reverse("article-list")
+        response = self.client.get(url, {"title": "Django Article"})
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data['results']), 1)
-        self.assertEqual(response.data['results'][0]['title'], "Django Article")
+        self.assertEqual(len(response.data["results"]), 1)
+        self.assertEqual(response.data["results"][0]["title"], "Django Article")

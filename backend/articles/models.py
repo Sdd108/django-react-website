@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class Article(models.Model):
     title = models.CharField(max_length=200)
     content = models.TextField()
@@ -13,4 +14,4 @@ class Article(models.Model):
         return self.title
 
     class Meta:
-        ordering = ['-published_date'] 
+        ordering = ["-published_date"]

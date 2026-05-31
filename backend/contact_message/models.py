@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class Message(models.Model):
     name = models.CharField(max_length=100)
     email = models.EmailField()
@@ -12,6 +13,6 @@ class Message(models.Model):
         return f"Message from {self.name} ({self.created_at.strftime('%Y-%m-%d')})"
 
     class Meta:
-        ordering = ['-created_at']
-        verbose_name = 'Contact Message'
-        verbose_name_plural = 'Contact Messages' 
+        ordering = ["-created_at"]
+        verbose_name = "Contact Message"
+        verbose_name_plural = "Contact Messages"

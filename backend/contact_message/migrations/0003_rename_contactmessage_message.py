@@ -4,14 +4,13 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('contact_message', '0002_rename_message_contactmessage'),
+        ("contact_message", "0002_rename_message_contactmessage"),
     ]
 
     operations = [
         migrations.RenameModel(
-            old_name='ContactMessage',
-            new_name='Message',
+            old_name="ContactMessage",
+            new_name="Message",
         ),
     ]

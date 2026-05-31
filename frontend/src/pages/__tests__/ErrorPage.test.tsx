@@ -18,7 +18,7 @@ function renderErrorPage() {
         children: [{ index: true, element: <div>Home</div> }],
       },
     ],
-    { initialEntries: ["/nonexistent"] }
+    { initialEntries: ["/nonexistent"] },
   );
 
   return render(
@@ -26,7 +26,7 @@ function renderErrorPage() {
       <Provider>
         <RouterProvider router={router} />
       </Provider>
-    </QueryClientProvider>
+    </QueryClientProvider>,
   );
 }
 
