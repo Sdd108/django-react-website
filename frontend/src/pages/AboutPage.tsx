@@ -52,7 +52,12 @@ const AboutPage = () => {
           <Heading as="h1" size="4xl" fontWeight="extrabold">
             About Me
           </Heading>
-          <Text fontSize="lg" color="fg.muted" maxW="600px" lineHeight="relaxed">
+          <Text
+            fontSize="lg"
+            color="fg.muted"
+            maxW="600px"
+            lineHeight="relaxed"
+          >
             Hi, I'm Zhipeng — a full-stack developer passionate about building
             clean, fast, and useful software.
           </Text>
@@ -124,7 +129,12 @@ const AboutPage = () => {
                 <Text fontSize="sm" color="fg.muted" mt={1}>
                   {exp.company} — {exp.period}
                 </Text>
-                <Text fontSize="sm" color="fg.muted" mt={2} lineHeight="relaxed">
+                <Text
+                  fontSize="sm"
+                  color="fg.muted"
+                  mt={2}
+                  lineHeight="relaxed"
+                >
                   {exp.description}
                 </Text>
               </Box>

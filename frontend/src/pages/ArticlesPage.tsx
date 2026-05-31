@@ -153,11 +153,7 @@ const ArticlesPage = () => {
                   </Box>
                 </HStack>
 
-                <Text
-                  color="fg.muted"
-                  lineHeight="relaxed"
-                  lineClamp={3}
-                >
+                <Text color="fg.muted" lineHeight="relaxed" lineClamp={3}>
                   {getExcerpt(article.content)}
                 </Text>
 

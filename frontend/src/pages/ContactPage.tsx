@@ -67,7 +67,9 @@ const ContactPage = () => {
         const errs = error as Record<string, string[]>;
         const mapped: FieldErrors = {};
         for (const [key, msgs] of Object.entries(errs)) {
-          mapped[key as keyof FieldErrors] = Array.isArray(msgs) ? msgs[0] : msgs;
+          mapped[key as keyof FieldErrors] = Array.isArray(msgs)
+            ? msgs[0]
+            : msgs;
         }
         setFieldErrors(mapped);
       } else {
@@ -82,7 +84,7 @@ const ContactPage = () => {
   });
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
@@ -151,7 +153,10 @@ const ContactPage = () => {
             <Field.Root>
               <Field.Label>
                 <FaPhone size={12} style={{ marginRight: 6 }} />
-                Phone <Text as="span" color="fg.muted">(optional)</Text>
+                Phone{" "}
+                <Text as="span" color="fg.muted">
+                  (optional)
+                </Text>
               </Field.Label>
               <Input
                 name="phone"

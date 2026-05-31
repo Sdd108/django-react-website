@@ -32,7 +32,11 @@ const fetchArticle = async (id: string): Promise<Article> => {
 const ArticleDetailPage = () => {
   const { id } = useParams<{ id: string }>();
 
-  const { data: article, isLoading, isError } = useQuery({
+  const {
+    data: article,
+    isLoading,
+    isError,
+  } = useQuery({
     queryKey: ["article", id],
     queryFn: () => fetchArticle(id!),
     enabled: !!id,
@@ -88,7 +92,12 @@ const ArticleDetailPage = () => {
         </Link>
 
         <VStack gap={3} alignItems="flex-start">
-          <Heading as="h1" size="4xl" fontWeight="extrabold" letterSpacing="tight">
+          <Heading
+            as="h1"
+            size="4xl"
+            fontWeight="extrabold"
+            letterSpacing="tight"
+          >
             {article.title}
           </Heading>
 
