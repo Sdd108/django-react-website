@@ -16,26 +16,23 @@ A personal website built with **Django REST Framework** (backend), **React + Typ
 
 ### Prerequisites
 
-- Python 3.11+
+- Python 3.12+
 - Node.js 20+
+- [uv](https://docs.astral.sh/uv/) (Python package manager)
 
 ### Backend
 
 ```bash
 cd backend
 
-# Create and activate a virtual environment
-python3 -m venv venv
-source venv/bin/activate
-
-# Install dependencies
-pip install django djangorestframework django-cors-headers django-filter
+# Create virtual environment and install dependencies
+uv sync
 
 # Run migrations
-python manage.py migrate
+uv run python manage.py migrate
 
 # Start dev server (http://localhost:8000)
-python manage.py runserver
+uv run python manage.py runserver
 ```
 
 ### Frontend

@@ -12,10 +12,11 @@ A personal website (sruta.cn) built with **Django REST Framework** backend, **Re
 
 ```bash
 cd backend
-python manage.py runserver           # Start dev server (default :8000)
-python manage.py test                # Run all tests
-python manage.py test articles       # Run article tests only
-python manage.py create_test_articles # Seed DB with 55 test articles
+uv sync                              # Create venv + install deps (first time only)
+uv run python manage.py runserver           # Start dev server (default :8000)
+uv run python manage.py test                # Run all tests
+uv run python manage.py test articles       # Run article tests only
+uv run python manage.py create_test_articles # Seed DB with 55 test articles
 ```
 
 ### Frontend (`frontend/`)
@@ -32,12 +33,13 @@ npm run preview  # Preview production build locally
 
 ```bash
 cd scraper
-scrapy crawl article_spider
+uv sync                              # Create venv + install deps (first time)
+uv run scrapy crawl article_spider
 ```
 
 ## Testing
 
-- Backend: `cd backend && python manage.py test` (or `cd backend && source venv/bin/activate && pytest -v`)
+- Backend: `cd backend && uv run python manage.py test` (or `cd backend && uv run pytest -v`)
 - Frontend: `cd frontend && npm test`
 - Always run both suites after changes touching shared interfaces, serializers, or API contracts.
 
@@ -59,7 +61,7 @@ Execute this autonomously — do not stop to ask for approval on individual fixe
 
 When asked to set up or repair the development environment, act as a self-healing provisioning agent:
 
-1. Run diagnostics: check Python version, Node version, pip packages, npm packages, GitHub CLI auth status, and presence of `__init__.py` files in all Django app directories
+1. Run diagnostics: check Python version, Node version, uv and Python packages, npm packages, GitHub CLI auth status, and presence of `__init__.py` files in all Django app directories
 2. Detect every missing dependency, broken configuration, and path alias issue
 3. Fix each issue autonomously — install missing packages, create missing `__init__.py` files, configure filter backends in DRF viewsets, install Vitest in the correct frontend directory, add jsdom mocks, fix router types, resolve all import path aliases
 4. Verify fixes by running both backend and frontend test suites
