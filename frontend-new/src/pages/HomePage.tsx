@@ -1,55 +1,106 @@
-import { Card, Heading, HStack, Stack, Text } from "@chakra-ui/react";
-import { FaBookOpen } from "react-icons/fa";
+import {
+  Box,
+  Button,
+  Card,
+  Container,
+  Heading,
+  Separator,
+  SimpleGrid,
+  Stack,
+  Text,
+  VStack,
+} from "@chakra-ui/react";
+import { FaBookOpen, FaLightbulb, FaCheckCircle } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 const HomePage = () => {
   const features = [
     {
       title: "Latest Articles",
       description:
-        "Explore our collection of in-depth technical articles about cursors and more.",
-      icon: <FaBookOpen />,
+        "In-depth technical articles on database management, frontend development, and modern web technologies.",
+      icon: <FaBookOpen size={24} />,
     },
     {
       title: "Expert Insights",
       description:
-        "Learn from industry experts about database management and frontend development.",
-      icon: <FaBookOpen />,
+        "Learn from hands-on experience with real-world projects and practical coding techniques.",
+      icon: <FaLightbulb size={24} />,
     },
     {
       title: "Best Practices",
       description:
-        "Discover best practices and tips for modern web development.",
-      icon: <FaBookOpen />,
+        "Discover proven patterns, clean code principles, and tips for building better software.",
+      icon: <FaCheckCircle size={24} />,
     },
   ];
 
   return (
-    <Stack gap={8}>
-      <Heading>Welcome to @sruta.cn</Heading>
+    <Stack gap={0}>
+      {/* Hero Section */}
+      <VStack py={{ base: 16, md: 24 }} gap={6} textAlign="center">
+        <Container maxW="700px">
+          <Heading
+            as="h1"
+            size={{ base: "4xl", md: "5xl" }}
+            fontWeight="extrabold"
+            letterSpacing="tight"
+            lineHeight="1.1"
+          >
+            Welcome to Sruta
+          </Heading>
+          <Text
+            mt={4}
+            fontSize={{ base: "lg", md: "xl" }}
+            color="fg.muted"
+            lineHeight="relaxed"
+          >
+            Exploring the world of web development through comprehensive
+            articles and tutorials. From database architecture to modern
+            frontend frameworks.
+          </Text>
+          <Link to="/articles">
+            <Button size="lg" mt={8} colorPalette="blue" variant="solid">
+              Explore Articles
+            </Button>
+          </Link>
+        </Container>
+      </VStack>
 
-      <Text>
-        Exploring the world of web development through comprehensive articles
-        and tutorials. From database management to frontend development.
-      </Text>
+      <Separator />
 
-      {/* <Link to="/articles">Explore Articles</Link> */}
+      {/* Features Section */}
+      <Container maxW="1100px" py={{ base: 12, md: 20 }}>
+        <VStack gap={4} mb={12} textAlign="center">
+          <Heading as="h2" size="3xl" fontWeight="semibold">
+            What you'll find here
+          </Heading>
+          <Text fontSize="lg" color="fg.muted" maxW="600px">
+            A growing collection of resources to help you build better software.
+          </Text>
+        </VStack>
 
-      <HStack columns={{ base: 1, md: 3 }} gap={5}>
-        {features.map((feature, index) => (
-          <Card.Root key={index} padding={4}>
-            <Card.Header>
-              <HStack>
-                {feature.icon}
-                <Heading size="md">{feature.title}</Heading>
-              </HStack>
-            </Card.Header>
-
-            <Card.Body>
-              <Text>{feature.description}</Text>
-            </Card.Body>
-          </Card.Root>
-        ))}
-      </HStack>
+        <SimpleGrid columns={{ base: 1, md: 3 }} gap={6}>
+          {features.map((feature, index) => (
+            <Card.Root key={index} variant="elevated" size="lg">
+              <Card.Body gap={4}>
+                <Box
+                  as="span"
+                  color="blue.solid"
+                  bg="blue.subtle"
+                  p={3}
+                  borderRadius="lg"
+                  display="inline-flex"
+                >
+                  {feature.icon}
+                </Box>
+                <Card.Title>{feature.title}</Card.Title>
+                <Card.Description>{feature.description}</Card.Description>
+              </Card.Body>
+            </Card.Root>
+          ))}
+        </SimpleGrid>
+      </Container>
     </Stack>
   );
 };
