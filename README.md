@@ -41,7 +41,7 @@ python manage.py runserver
 ### Frontend
 
 ```bash
-cd frontend-new
+cd frontend
 
 # Install dependencies
 npm install
@@ -68,7 +68,7 @@ scrapy crawl article_spider
 │   ├── articles/         # Article model
 │   ├── contact_message/  # Contact form submissions
 │   └── backend/          # Django project settings
-├── frontend-new/         # React + Vite frontend
+├── frontend/         # React + Vite frontend
 │   └── src/
 │       ├── components/   # NavBar, UI primitives
 │       └── pages/        # Home, Articles, About, Contact

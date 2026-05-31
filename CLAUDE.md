@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-A personal website (sruta.cn) built with **Django REST Framework** backend, **React + TypeScript + Vite** frontend, and a **Scrapy** scraper for crawling articles. The active frontend is `frontend-new/`; `frontend/` is an older iteration.
+A personal website (sruta.cn) built with **Django REST Framework** backend, **React + TypeScript + Vite** frontend, and a **Scrapy** scraper for crawling articles.
 
 ## Commands
 
@@ -18,10 +18,10 @@ python manage.py test articles       # Run article tests only
 python manage.py create_test_articles # Seed DB with 55 test articles
 ```
 
-### Frontend (`frontend-new/`)
+### Frontend (`frontend/`)
 
 ```bash
-cd frontend-new
+cd frontend
 npm run dev      # Start Vite dev server
 npm run build    # TypeScript check + production build → dist/
 npm run lint     # ESLint
@@ -52,13 +52,13 @@ Three Django apps, all registered in `INSTALLED_APPS`:
 - DRF defaults: `PageNumberPagination`, `AllowAny` permissions, `DjangoFilterBackend` + `SearchFilter`.
 - Timezone: `Asia/Shanghai`.
 
-### Frontend (`frontend-new/`) — React 19 + Vite + Chakra UI v3
+### Frontend (`frontend/`) — React 19 + Vite + Chakra UI v3
 
 ```
 src/
-├── main.tsx              # Entry point: ChakraProvider + RouterProvider
+├── main.tsx              # Entry point: QueryClientProvider + ChakraProvider + RouterProvider + Toaster
 ├── App.tsx               # Unused (renders <Test /> only, not wired in)
-├── routes.tsx            # createBrowserRouter — single layout route
+├── routes.tsx            # createBrowserRouter with layout routes
 ├── components/
 │   ├── NavBar.tsx        # Sticky nav with links + ColorModeButton
 │   ├── Test.tsx          # Placeholder component (just renders ColorModeButton)
@@ -68,28 +68,26 @@ src/
 │       ├── toaster.tsx    # Toast notification setup
 │       └── tooltip.tsx    # Tooltip component
 └── pages/
-    ├── Layout.tsx         # Grid layout (nav / main / footer), renders <Outlet />
-    ├── HomePage.tsx       # Landing page with feature cards
-    └── ErrorPage.tsx      # Error boundary page
+    ├── Layout.tsx         # Flex layout (nav / main / footer), renders <Outlet />
+    ├── HomePage.tsx       # Landing page with hero + feature cards
+    ├── ArticlesPage.tsx   # Article list with paginated API fetching
+    ├── ArticleDetailPage.tsx # Single article detail view
+    ├── AboutPage.tsx      # Personal profile with skills and experience
+    ├── ContactPage.tsx    # Contact form with validation and toasts
+    └── ErrorPage.tsx      # Error boundary page with NavBar
 ```
 
 **Key dependencies and patterns:**
 - **Chakra UI v3** (`@chakra-ui/react`) for components and styling
 - **next-themes** for dark/light mode (class-based, persisted)
 - **React Router v7** (`createBrowserRouter`) with layout routes
+- **TanStack React Query** for server-state (fetching, caching) — requires `QueryClientProvider`
 - **Zustand** for client-side state management
-- **TanStack React Query** for server-state (fetching, caching, devtools)
 - **Ant Design v6** icons (`@ant-design/icons`) alongside react-icons
 - Path alias: `@/*` → `./src/*` (configured in both `tsconfig.app.json` and `vite.config.ts`)
 - Vite with `vite-tsconfig-paths` plugin for alias resolution
+- Vite dev server proxies `/api` → `http://localhost:8000`
 
 ### Scraper (`scraper/`)
 
 Standard Scrapy project. `ArticleSpider` scrapes article title/content/author/date from example.com (placeholder URLs/selectors — needs real targets). Has a Django integration pipeline (`django_pipeline.py`) for saving scraped items directly to the Django database.
-
-### Two Frontends Note
-
-- `frontend/` — older: React 18, Ant Design v5 + Tailwind, no Chakra UI
-- `frontend-new/` — current: React 19, Chakra UI v3, active development
-
-The `frontend-new` is the one being actively developed (per recent commits). The Vite config in `frontend-new` has no proxy configured, so API calls go directly to the Django server (likely at `localhost:8000` — check API client configuration when adding server communication).
