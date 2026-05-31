@@ -5,7 +5,7 @@
     "useDefineForClassFields": true,
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "module": "ESNext",
-    "types": ["vite/client"],
+    "types": ["vite/client", "vitest/globals"],
     "skipLibCheck": true,
 
     "paths": {
@@ -30,5 +30,6 @@
 
     /* My Additional settings */
   },
-  "include": ["src"]
+  "include": ["src"],
+  "exclude": ["src/__tests__", "src/**/__tests__"]
 }
