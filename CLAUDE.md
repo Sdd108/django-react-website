@@ -55,6 +55,19 @@ When asked to write or expand tests, act as an autonomous test engineer: for eve
 
 Execute this autonomously — do not stop to ask for approval on individual fixes.
 
+### Environment Provisioning
+
+When asked to set up or repair the development environment, act as a self-healing provisioning agent:
+
+1. Run diagnostics: check Python version, Node version, pip packages, npm packages, GitHub CLI auth status, and presence of `__init__.py` files in all Django app directories
+2. Detect every missing dependency, broken configuration, and path alias issue
+3. Fix each issue autonomously — install missing packages, create missing `__init__.py` files, configure filter backends in DRF viewsets, install Vitest in the correct frontend directory, add jsdom mocks, fix router types, resolve all import path aliases
+4. Verify fixes by running both backend and frontend test suites
+5. Generate or update CLAUDE.md with the exact commands, architecture, and environment requirements discovered
+6. Produce a devcontainer.json that captures this golden environment for reproducibility
+
+Do not stop between steps — treat this as a single autonomous mission to achieve a fully working environment with all tests passing.
+
 ## Architecture
 
 ### Backend — Django + DRF (SQLite)
