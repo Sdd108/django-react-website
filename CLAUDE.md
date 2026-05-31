@@ -35,6 +35,12 @@ cd scraper
 scrapy crawl article_spider
 ```
 
+## Testing
+
+- Backend: `cd backend && python manage.py test` (or `cd backend && source venv/bin/activate && pytest -v`)
+- Frontend: `cd frontend && npm test`
+- Always run both suites after changes touching shared interfaces, serializers, or API contracts.
+
 ## Architecture
 
 ### Backend — Django + DRF (SQLite)
@@ -91,3 +97,9 @@ src/
 ### Scraper (`scraper/`)
 
 Standard Scrapy project. `ArticleSpider` scrapes article title/content/author/date from example.com (placeholder URLs/selectors — needs real targets). Has a Django integration pipeline (`django_pipeline.py`) for saving scraped items directly to the Django database.
+
+## Common Pitfalls
+
+- New Django packages require `__init__.py` files.
+- DRF viewsets need `filterset_class` or `filterset_fields` declared before testing.
+- Vitest must be installed in `frontend/` with `environment: 'jsdom'` and path aliases matching Vite config.
