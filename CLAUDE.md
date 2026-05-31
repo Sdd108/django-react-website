@@ -42,6 +42,7 @@ uv run scrapy crawl article_spider
 - Backend: `cd backend && uv run python manage.py test` (or `cd backend && uv run pytest -v`)
 - Frontend: `cd frontend && npm test`
 - Always run both suites after changes touching shared interfaces, serializers, or API contracts.
+- After any code changes, run formatters: `cd backend && uv run ruff format .` for Python, `cd frontend && npx prettier --write "src/**/*.{ts,tsx,css}"` for TypeScript/CSS.
 
 ### Autonomous Test Generation
 
