@@ -1,5 +1,6 @@
 import {
   Badge,
+  Box,
   Button,
   Card,
   Container,
@@ -11,7 +12,7 @@ import {
 } from "@chakra-ui/react";
 import { useQuery } from "@tanstack/react-query";
 import { FaCalendar, FaUser } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 interface Article {
   id: number;
@@ -37,6 +38,7 @@ const fetchArticles = async (): Promise<Article[]> => {
 };
 
 const ArticlesPage = () => {
+  const navigate = useNavigate();
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ["articles"],
     queryFn: fetchArticles,
@@ -116,43 +118,58 @@ const ArticlesPage = () => {
 
         <VStack gap={4}>
           {data.map((article) => (
-            <Link
+            <Card.Root
               key={article.id}
-              to={`/articles/${article.id}`}
-              style={{ textDecoration: "none" }}
+              variant="elevated"
+              width="100%"
+              _hover={{ boxShadow: "md", transform: "translateY(-1px)" }}
+              transition="all 0.2s"
+              cursor="pointer"
+              onClick={() => navigate(`/articles/${article.id}`)}
             >
-              <Card.Root
-                variant="elevated"
-                _hover={{ boxShadow: "md", transform: "translateY(-1px)" }}
-                transition="all 0.2s"
-                cursor="pointer"
-              >
-                <Card.Body gap={3}>
-                  <Heading as="h2" size="lg">
-                    {article.title}
-                  </Heading>
+              <Card.Body gap={3}>
+                <Heading as="h2" size="lg">
+                  {article.title}
+                </Heading>
 
-                  <HStack gap={4} color="fg.muted" fontSize="sm">
-                    <Text display="inline-flex" alignItems="center" gap={1}>
-                      <FaUser size={12} />
-                      {article.author}
-                    </Text>
-                    <Text display="inline-flex" alignItems="center" gap={1}>
-                      <FaCalendar size={12} />
-                      {formatDate(article.published_date)}
-                    </Text>
-                  </HStack>
+                <HStack gap={4} color="fg.muted" fontSize="sm">
+                  <Box
+                    as="span"
+                    display="inline-flex"
+                    alignItems="center"
+                    gap={1}
+                  >
+                    <FaUser size={12} />
+                    {article.author}
+                  </Box>
+                  <Box
+                    as="span"
+                    display="inline-flex"
+                    alignItems="center"
+                    gap={1}
+                  >
+                    <FaCalendar size={12} />
+                    {formatDate(article.published_date)}
+                  </Box>
+                </HStack>
 
-                  <Text color="fg.muted" lineHeight="relaxed">
-                    {getExcerpt(article.content)}
-                  </Text>
+                <Text
+                  color="fg.muted"
+                  lineHeight="relaxed"
+                  lineClamp={3}
+                >
+                  {getExcerpt(article.content)}
+                </Text>
 
-                  <Badge colorPalette="blue" variant="subtle" alignSelf="flex-start">
-                    Read more →
-                  </Badge>
-                </Card.Body>
-              </Card.Root>
-            </Link>
+                <Badge
+                  colorPalette="blue"
+                  variant="subtle"
+                  alignSelf="flex-start"
+                >
+                  Read more →
+                </Badge>
+              </Card.Body>
+            </Card.Root>
           ))}
         </VStack>
       </VStack>
