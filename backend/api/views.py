@@ -10,7 +10,7 @@ class StandardResultsSetPagination(PageNumberPagination):
     page_size_query_param = 'page_size'
     max_page_size = 100
 
-class ArticleViewSet(viewsets.ModelViewSet):
+class ArticleViewSet(viewsets.ReadOnlyModelViewSet):
     pagination_class = StandardResultsSetPagination
     queryset = Article.objects.all().order_by('-published_date')
     serializer_class = ArticleSerializer
