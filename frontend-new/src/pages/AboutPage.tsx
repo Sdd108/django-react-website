@@ -1,5 +1,4 @@
 import {
-  Badge,
   Box,
   Container,
   Heading,
@@ -85,20 +84,22 @@ const AboutPage = () => {
           </Heading>
           <SimpleGrid columns={{ base: 2, md: 4 }} gap={3} width="100%">
             {skills.map((skill) => (
-              <Badge
+              <Box
                 key={skill.label}
-                size="lg"
-                variant="subtle"
-                colorPalette="blue"
+                bg="blue.subtle"
+                color="blue.solid"
                 py={2}
                 px={4}
+                borderRadius="md"
                 display="flex"
                 alignItems="center"
                 gap={2}
+                fontSize="sm"
+                fontWeight="medium"
               >
                 {skill.icon}
                 {skill.label}
-              </Badge>
+              </Box>
             ))}
           </SimpleGrid>
         </VStack>

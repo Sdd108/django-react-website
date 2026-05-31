@@ -6,7 +6,6 @@ import {
   Heading,
   HStack,
   Skeleton,
-  Stack,
   Text,
   VStack,
 } from "@chakra-ui/react";
@@ -23,10 +22,18 @@ interface Article {
   source_url: string;
 }
 
+interface PaginatedResponse {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: Article[];
+}
+
 const fetchArticles = async (): Promise<Article[]> => {
   const res = await fetch("/api/articles/");
   if (!res.ok) throw new Error("Failed to fetch articles");
-  return res.json();
+  const data: PaginatedResponse = await res.json();
+  return data.results;
 };
 
 const ArticlesPage = () => {
@@ -107,7 +114,7 @@ const ArticlesPage = () => {
           In-depth articles on web development, databases, and more.
         </Text>
 
-        <Stack gap={4}>
+        <VStack gap={4}>
           {data.map((article) => (
             <Link
               key={article.id}
@@ -147,7 +154,7 @@ const ArticlesPage = () => {
               </Card.Root>
             </Link>
           ))}
-        </Stack>
+        </VStack>
       </VStack>
     </Container>
   );
