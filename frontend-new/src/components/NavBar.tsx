@@ -5,7 +5,8 @@ import {
   AiOutlineUser,
   AiOutlineMail,
 } from "react-icons/ai";
-import { Heading, HStack } from "@chakra-ui/react";
+import { Box, Heading, HStack } from "@chakra-ui/react";
+import { Link } from "react-router-dom";
 
 const NavBar = () => {
   const menuItems = [
@@ -16,18 +17,32 @@ const NavBar = () => {
   ];
 
   return (
-    <HStack justifyContent="space-between">
-      <Heading>Sruta</Heading>
-      <HStack gap={5}>
-        {menuItems.map((item) => (
-          <HStack>
-            {item.icon}
-            {item.label}
-          </HStack>
-        ))}
-        <ColorModeButton />
+    <Box
+      padding={5}
+      position="sticky"
+      top="0"
+      zIndex="1000"
+      bg="cyan.solid"
+      borderBottom="1px solid"
+      borderColor="gray.200"
+    >
+      <HStack justifyContent="space-between">
+        <Link to="/">
+          <Heading color={"white"}>Sruta</Heading>
+        </Link>
+        <HStack gap={5}>
+          {menuItems.map((item) => (
+            <Box color="gray.contrast" key={item.key}>
+              <HStack>
+                {item.icon}
+                {item.label}
+              </HStack>
+            </Box>
+          ))}
+          <ColorModeButton />
+        </HStack>
       </HStack>
-    </HStack>
+    </Box>
   );
 };
 

@@ -34,7 +34,7 @@ const HomePage = () => {
 
       {/* <Link to="/articles">Explore Articles</Link> */}
 
-      <HStack columns={{ base: 1, md: 3 }} gap={4}>
+      <HStack columns={{ base: 1, md: 3 }} gap={5}>
         {features.map((feature, index) => (
           <Card.Root key={index} padding={4}>
             <Card.Header>
