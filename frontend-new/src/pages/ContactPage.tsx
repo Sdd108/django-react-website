@@ -169,7 +169,6 @@ const ContactPage = () => {
                 onChange={handleChange}
                 placeholder="What would you like to say?"
                 rows={6}
-                autoresize
               />
               {fieldErrors.content && (
                 <Field.ErrorText>{fieldErrors.content}</Field.ErrorText>
