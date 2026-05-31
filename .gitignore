@@ -6,16 +6,19 @@ __pycache__/
 .Python
 env/
 venv/
+.venv/
 .env
 db.sqlite3
 /static/
 /media/
 *.log
+*.egg-info/
 
 # React/Node
 node_modules/
 /build/
 /dist/
+dist-ssr/
 .npm
 .env.local
 .env.development.local
@@ -24,12 +27,20 @@ node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
 
 # IDE/Editor
 .idea/
-.vscode/
+.vscode/*
+!.vscode/extensions.json
 *.swp
 *.swo
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
 .DS_Store
 Thumbs.db
 
@@ -39,32 +50,12 @@ htmlcov/
 .pytest_cache/
 coverage/
 
-# Migration files (optional)
+# Claude Code
+.claude/
+
+# Build artifacts
+backend/src/
+
+# Migration files (keep __init__.py)
 */migrations/*.py
-!*/migrations/__init__.py 
-
-# react
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
-
-node_modules
-dist
-dist-ssr
-*.local
-
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
-.DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+!*/migrations/__init__.py
