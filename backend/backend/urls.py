@@ -17,5 +17,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('api.urls')),
     path('api/contact/', include('contact_message.urls')),
-    path('', index),
+    path('', index, name='index'),
 ] 

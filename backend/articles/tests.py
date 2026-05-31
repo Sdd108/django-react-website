@@ -130,8 +130,8 @@ class ArticleFilterTests(APITestCase):
     def test_filter_by_title(self):
         """Test filtering articles by title"""
         url = reverse('article-list')
-        response = self.client.get(url, {'title': 'Django'})
-        
+        response = self.client.get(url, {'title': 'Django Article'})
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data['results']), 1)
         self.assertEqual(response.data['results'][0]['title'], "Django Article")
