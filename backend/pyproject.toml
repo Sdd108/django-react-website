@@ -1,0 +1,18 @@
+[project]
+name = "sruta-backend"
+version = "0.1.0"
+description = "Personal website backend — Django REST Framework API"
+requires-python = ">=3.12"
+dependencies = [
+    "django>=6.0",
+    "djangorestframework>=3.17",
+    "django-cors-headers>=4.9",
+    "django-filter>=25.2",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0",
+    "pytest-django>=4.12",
+    "pytest-cov>=7.1",
+]

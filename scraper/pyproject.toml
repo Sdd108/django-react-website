@@ -1,0 +1,9 @@
+[project]
+name = "sruta-scraper"
+version = "0.1.0"
+description = "Personal website scraper — Scrapy article spider"
+requires-python = ">=3.11"
+dependencies = [
+    "scrapy>=2.5.0",
+    "django>=4.2.0",
+]
