@@ -24,12 +24,14 @@ interface Article {
 }
 
 const fetchArticle = async (id: string): Promise<Article> => {
+  // 详情页根据 URL 中的 id 请求单篇文章。
   const res = await fetch(`/api/articles/${id}/`);
   if (!res.ok) throw new Error("Article not found");
   return res.json();
 };
 
 const ArticleDetailPage = () => {
+  // id 来自 /articles/:id；enabled 确保 id 存在时才发请求。
   const { id } = useParams<{ id: string }>();
 
   const {
@@ -43,6 +45,7 @@ const ArticleDetailPage = () => {
   });
 
   if (isLoading) {
+    // 用骨架屏占位标题、元信息和正文区域，避免加载时页面突然跳动。
     return (
       <Container maxW="800px" py={12}>
         <VStack gap={6} alignItems="stretch">
@@ -56,6 +59,7 @@ const ArticleDetailPage = () => {
   }
 
   if (isError || !article) {
+    // 404 或网络错误都落到同一空状态，并提供回到列表的路径。
     return (
       <Container maxW="800px" py={20}>
         <VStack gap={6} textAlign="center">
@@ -74,6 +78,7 @@ const ArticleDetailPage = () => {
   }
 
   const formatDate = (dateStr: string) => {
+    // 详情页和列表页使用一致的日期展示格式。
     return new Date(dateStr).toLocaleDateString("en-US", {
       year: "numeric",
       month: "long",
@@ -112,6 +117,7 @@ const ArticleDetailPage = () => {
             </Box>
           </HStack>
 
+          {/* source_url 是可选字段，只有存在时才展示外部来源链接。 */}
           {article.source_url && (
             <Badge colorPalette="blue" variant="subtle">
               <a
@@ -128,6 +134,7 @@ const ArticleDetailPage = () => {
 
         <Separator />
 
+        {/* 正文保留换行，支持普通文本文章的段落结构。 */}
         <Text fontSize="md" lineHeight="relaxed" whiteSpace="pre-wrap">
           {article.content}
         </Text>

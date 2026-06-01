@@ -11,6 +11,7 @@ import { Link, useLocation } from "react-router-dom";
 const NavBar = () => {
   const location = useLocation();
 
+  // 导航配置集中维护，渲染时同时生成图标、文案和跳转链接。
   const menuItems = [
     { key: "/", label: "Home", icon: <AiOutlineHome /> },
     { key: "/articles", label: "Articles", icon: <AiOutlineFileText /> },
@@ -45,6 +46,7 @@ const NavBar = () => {
 
         <HStack gap={1}>
           {menuItems.map((item) => {
+            // 当前路径和菜单 key 完全一致时高亮；子路由保持普通状态，避免误导用户。
             const isActive = location.pathname === item.key;
             return (
               <Link

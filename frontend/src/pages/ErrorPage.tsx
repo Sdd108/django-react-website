@@ -5,6 +5,7 @@ import NavBar from "../components/NavBar";
 const ErrorPage = () => {
   const error = useRouteError();
 
+  // react-router 的 404 会被识别为 RouteErrorResponse，其余异常统一展示通用错误。
   const title = isRouteErrorResponse(error) ? "404" : "Error";
   const message = isRouteErrorResponse(error)
     ? "The page you're looking for doesn't exist."

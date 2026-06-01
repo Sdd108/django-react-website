@@ -6,9 +6,11 @@ import random
 
 
 class Command(BaseCommand):
+    # 该命令用于本地填充大量文章，方便测试分页、搜索和列表渲染效果。
     help = "Creates 55 test articles about various tech topics"
 
     def get_random_paragraphs(self, num_paragraphs=3):
+        # 从固定段落池中随机抽样，生成长度不同但结构稳定的测试正文。
         paragraphs = [
             "In the ever-evolving landscape of technology, understanding the fundamentals of data structures and algorithms remains crucial. These building blocks form the foundation of efficient software development, enabling developers to create scalable and performant applications.",
             "Modern web development frameworks have revolutionized how we build applications. From React's component-based architecture to Django's batteries-included philosophy, developers now have powerful tools at their disposal.",
@@ -24,6 +26,7 @@ class Command(BaseCommand):
         return "\n\n".join(random.sample(paragraphs, num_paragraphs))
 
     def handle(self, *args, **kwargs):
+        # 主题和作者成对出现，让测试数据看起来更接近真实技术博客。
         topics = [
             ("Understanding Database Indexing", "Database Expert"),
             ("Modern JavaScript Features", "Frontend Developer"),
@@ -39,8 +42,10 @@ class Command(BaseCommand):
 
         for i in range(55):
             topic, author = random.choice(topics)
+            # 每 10 篇递增 Part，制造重复主题下的系列文章效果。
             title = f"{topic} - Part {(i // 10) + 1}"
 
+            # 发布时间按天递减，确保列表排序和分页在测试时有稳定数据。
             article = Article.objects.create(
                 title=title,
                 content=self.get_random_paragraphs(random.randint(3, 5)),
@@ -49,6 +54,7 @@ class Command(BaseCommand):
                 source_url=f"https://example.com/articles/{i + 1}",
             )
 
+            # 向命令行输出创建结果，方便确认批量生成过程没有中断。
             self.stdout.write(
                 self.style.SUCCESS(f"Successfully created article: {title}")
             )

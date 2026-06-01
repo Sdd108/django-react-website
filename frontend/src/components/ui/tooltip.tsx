@@ -12,6 +12,7 @@ export interface TooltipProps extends ChakraTooltip.RootProps {
 
 export const Tooltip = React.forwardRef<HTMLDivElement, TooltipProps>(
   function Tooltip(props, ref) {
+    // 组件保留 Chakra Tooltip 的完整能力，同时提供 disabled/portalled 这些常用开关。
     const {
       showArrow,
       children,
@@ -23,11 +24,13 @@ export const Tooltip = React.forwardRef<HTMLDivElement, TooltipProps>(
       ...rest
     } = props;
 
+    // disabled 时直接返回 children，避免渲染额外 DOM 和交互层。
     if (disabled) return children;
 
     return (
       <ChakraTooltip.Root {...rest}>
         <ChakraTooltip.Trigger asChild>{children}</ChakraTooltip.Trigger>
+        {/* 默认通过 Portal 渲染浮层，避免被父容器 overflow 或 z-index 影响。 */}
         <Portal disabled={!portalled} container={portalRef}>
           <ChakraTooltip.Positioner>
             <ChakraTooltip.Content ref={ref} {...contentProps}>

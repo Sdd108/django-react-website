@@ -1,10 +1,11 @@
-/* Minimal global reset — Chakra UI handles theming and typography */
+/* 最小全局 reset：主题、颜色和排版主要交给 Chakra UI 管理。 */
 *,
 *::before,
 *::after {
   box-sizing: border-box;
 }
 
+/* 去掉浏览器默认外边距，避免页面边缘出现不可控空白。 */
 body {
   margin: 0;
   padding: 0;

@@ -5,6 +5,7 @@ import { createTestWrapper } from "../../__tests__/test-utils";
 
 describe("HomePage", () => {
   it("renders the hero heading", () => {
+    // 首页首屏标题是品牌入口的核心可见文本。
     const wrapper = createTestWrapper("/");
     render(<HomePage />, { wrapper });
 
@@ -12,6 +13,7 @@ describe("HomePage", () => {
   });
 
   it("renders the hero tagline", () => {
+    // 副标题说明站点主题，使用正则避免和换行排版强绑定。
     const wrapper = createTestWrapper("/");
     render(<HomePage />, { wrapper });
 
@@ -21,6 +23,7 @@ describe("HomePage", () => {
   });
 
   it("renders the Explore Articles CTA", () => {
+    // 主要 CTA 应引导用户进入文章列表。
     const wrapper = createTestWrapper("/");
     render(<HomePage />, { wrapper });
 
@@ -28,6 +31,7 @@ describe("HomePage", () => {
   });
 
   it("renders the features section heading", () => {
+    // 特性区标题用于确认首屏下方内容正常渲染。
     const wrapper = createTestWrapper("/");
     render(<HomePage />, { wrapper });
 
@@ -35,6 +39,7 @@ describe("HomePage", () => {
   });
 
   it("renders all three feature cards", () => {
+    // 三张特性卡片来自数组渲染，这里覆盖完整数据集。
     const wrapper = createTestWrapper("/");
     render(<HomePage />, { wrapper });
 

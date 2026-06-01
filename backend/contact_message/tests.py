@@ -7,6 +7,7 @@ from .models import Message
 
 class MessageModelTests(TestCase):
     def setUp(self):
+        # 模型测试复用一条完整消息，覆盖字段保存和字符串展示。
         self.message = Message.objects.create(
             name="Test User",
             email="test@example.com",
@@ -36,7 +37,7 @@ class MessageModelTests(TestCase):
             name="Old Message", email="old@example.com", content="Older"
         )
         messages = list(Message.objects.all())
-        # newest first
+        # 新消息应排在第一位，匹配后台收件箱处理顺序。
         self.assertEqual(messages[0], older)
         self.assertEqual(messages[1], self.message)
 
@@ -52,6 +53,7 @@ class MessageModelTests(TestCase):
 class MessageAPITests(APITestCase):
     def test_post_message_success(self):
         """Test posting a valid contact message"""
+        # 完整 payload 应创建一条数据库记录，并返回成功提示。
         url = reverse("create_message")
         data = {
             "name": "John Doe",
@@ -66,6 +68,7 @@ class MessageAPITests(APITestCase):
 
     def test_post_message_phone_optional(self):
         """Test posting without phone (optional field) succeeds"""
+        # 电话是可选字段，不传时仍应成功创建消息。
         url = reverse("create_message")
         data = {
             "name": "Jane Doe",
@@ -78,6 +81,7 @@ class MessageAPITests(APITestCase):
 
     def test_post_message_missing_name(self):
         """Test posting without name returns validation error"""
+        # 缺少姓名时应返回字段级错误，避免保存不可联系的消息。
         url = reverse("create_message")
         data = {
             "email": "test@example.com",

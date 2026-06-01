@@ -16,6 +16,7 @@ import {
 } from "react-icons/fa";
 
 const AboutPage = () => {
+  // 技能标签集中维护，UI 只负责把 label 和 icon 渲染成网格。
   const skills = [
     { label: "Python", icon: <FaCode /> },
     { label: "Django", icon: <FaServer /> },
@@ -27,6 +28,7 @@ const AboutPage = () => {
     { label: "REST APIs", icon: <FaServer /> },
   ];
 
+  // 经历数据同样保持在数组中，避免在 JSX 中重复写相同结构。
   const experience = [
     {
       title: "Software Engineer",
@@ -47,7 +49,7 @@ const AboutPage = () => {
   return (
     <Container maxW="900px" py={12}>
       <VStack gap={12} alignItems="stretch">
-        {/* Hero */}
+        {/* 页面介绍区：说明个人定位。 */}
         <VStack gap={4} textAlign="center">
           <Heading as="h1" size="4xl" fontWeight="extrabold">
             About Me
@@ -65,7 +67,7 @@ const AboutPage = () => {
 
         <Separator />
 
-        {/* Bio */}
+        {/* 简介区：用段落形式补充开发方向和写作动机。 */}
         <VStack gap={4} alignItems="flex-start">
           <Heading as="h2" size="2xl">
             Who I am
@@ -82,7 +84,7 @@ const AboutPage = () => {
           </Text>
         </VStack>
 
-        {/* Skills */}
+        {/* 技能区：响应式网格在移动端和桌面端使用不同列数。 */}
         <VStack gap={4} alignItems="flex-start">
           <Heading as="h2" size="2xl">
             Skills &amp; Tools
@@ -109,7 +111,7 @@ const AboutPage = () => {
           </SimpleGrid>
         </VStack>
 
-        {/* Experience */}
+        {/* 经历区：左边框形成时间线式视觉提示。 */}
         <VStack gap={4} alignItems="flex-start">
           <Heading as="h2" size="2xl">
             Experience

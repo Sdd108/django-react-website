@@ -10,13 +10,16 @@ import {
 
 const Layout = () => {
   return (
+    // 顶层 Flex 让页脚在内容较少时仍贴近视口底部。
     <Flex direction="column" minH="100vh">
       <NavBar />
 
+      {/* Outlet 渲染当前子路由页面，导航栏和页脚保持不变。 */}
       <Box as="main" flex="1">
         <Outlet />
       </Box>
 
+      {/* 页脚放置品牌信息和社交入口，所有页面共享。 */}
       <Box
         as="footer"
         borderTopWidth="1px"

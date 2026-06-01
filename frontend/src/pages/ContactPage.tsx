@@ -22,12 +22,14 @@ interface ContactFormData {
 }
 
 interface FieldErrors {
+  // 后端返回的字段级错误只需要映射到这些可见输入项。
   name?: string;
   email?: string;
   content?: string;
 }
 
 const submitContact = async (data: ContactFormData): Promise<void> => {
+  // 联系表单只创建消息，不需要前端接收新资源对象。
   const res = await fetch("/api/contact/", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -36,7 +38,7 @@ const submitContact = async (data: ContactFormData): Promise<void> => {
 
   if (!res.ok) {
     const err = await res.json();
-    throw err; // Contains field-level validation errors
+    throw err; // 包含 DRF 返回的字段级校验错误。
   }
 };
 
@@ -52,6 +54,7 @@ const ContactPage = () => {
   const mutation = useMutation({
     mutationFn: submitContact,
     onSuccess: () => {
+      // 提交成功后清空表单和错误状态，避免用户重复提交同一内容。
       toaster.create({
         title: "Message sent!",
         description: "Thanks for reaching out. I'll get back to you soon.",
@@ -62,7 +65,7 @@ const ContactPage = () => {
       setFieldErrors({});
     },
     onError: (error: unknown) => {
-      // Handle DRF validation errors: { "field": ["error message"] }
+      // 处理 DRF 校验错误：{ "field": ["error message"] }。
       if (error && typeof error === "object") {
         const errs = error as Record<string, string[]>;
         const mapped: FieldErrors = {};
@@ -88,7 +91,7 @@ const ContactPage = () => {
   ) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
-    // Clear field error on edit
+    // 修改字段时清除该字段错误，提供即时反馈。
     if (fieldErrors[name as keyof FieldErrors]) {
       setFieldErrors((prev) => ({ ...prev, [name]: undefined }));
     }
@@ -96,6 +99,7 @@ const ContactPage = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    // 提交前清空旧错误，再等待后端返回最新校验结果。
     setFieldErrors({});
     mutation.mutate(form);
   };

@@ -9,6 +9,7 @@ from datetime import datetime
 class RootEndpointTests(TestCase):
     def test_root_returns_welcome_json(self):
         """Test that the root endpoint returns a welcome message"""
+        # 根接口作为简单健康检查，应返回可发现的 API 入口。
         url = reverse("index")
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
@@ -19,6 +20,7 @@ class RootEndpointTests(TestCase):
 
 class ArticleAPIEndpointTests(APITestCase):
     def setUp(self):
+        # 每个 API 用例都从一条基础文章开始，便于断言 count 和详情字段。
         self.article = Article.objects.create(
             title="API Test Article",
             content="Content for API endpoint test.",
@@ -61,6 +63,7 @@ class ArticleAPIEndpointTests(APITestCase):
 
     def test_create_article_endpoint(self):
         """Test POST /api/articles/ creates an article"""
+        # 创建接口应接受完整文章 payload，并返回新建对象的序列化结果。
         url = reverse("article-list")
         data = {
             "title": "Created Article",
@@ -78,6 +81,7 @@ class ArticleAPIEndpointTests(APITestCase):
 
     def test_create_article_requires_title(self):
         """Test POST /api/articles/ returns validation errors"""
+        # 缺失必填字段时，DRF 应返回字段级错误，前端会把它映射到表单。
         url = reverse("article-list")
         data = {
             "content": "Missing a required title.",
@@ -93,6 +97,7 @@ class ArticleAPIEndpointTests(APITestCase):
 
     def test_create_article_source_url_optional(self):
         """Test POST /api/articles/ succeeds without source_url"""
+        # source_url 是可选字段；不传时后端应保存为空字符串而不是拒绝请求。
         url = reverse("article-list")
         data = {
             "title": "Article Without Source",

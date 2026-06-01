@@ -14,6 +14,7 @@ import { FaBookOpen, FaLightbulb, FaCheckCircle } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
 const HomePage = () => {
+  // 首页特性卡片使用数据驱动渲染，后续增删卡片只需改数组。
   const features = [
     {
       title: "Latest Articles",
@@ -37,7 +38,7 @@ const HomePage = () => {
 
   return (
     <Stack gap={0}>
-      {/* Hero Section */}
+      {/* 首屏区域：展示站点定位，并引导用户进入文章列表。 */}
       <VStack py={{ base: 16, md: 24 }} gap={6} textAlign="center">
         <Container maxW="700px">
           <Heading
@@ -69,7 +70,7 @@ const HomePage = () => {
 
       <Separator />
 
-      {/* Features Section */}
+      {/* 特性区域：用三张卡片概括站点内容类型。 */}
       <Container maxW="1100px" py={{ base: 12, md: 20 }}>
         <VStack gap={4} mb={12} textAlign="center">
           <Heading as="h2" size="3xl" fontWeight="semibold">

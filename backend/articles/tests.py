@@ -8,6 +8,7 @@ from datetime import datetime
 
 class ArticleModelTests(TestCase):
     def setUp(self):
+        # 每个模型测试都复用同一篇文章，聚焦字段和字符串表现。
         self.article = Article.objects.create(
             title="Test Article",
             content="This is a test article content",
@@ -32,7 +33,7 @@ class ArticleModelTests(TestCase):
 
 class ArticleAPITests(APITestCase):
     def setUp(self):
-        # Create test articles
+        # 准备两篇文章，用来验证列表、详情、搜索和分页基础行为。
         self.article1 = Article.objects.create(
             title="First Test Article",
             content="Content for first test article",
@@ -68,7 +69,7 @@ class ArticleAPITests(APITestCase):
 
     def test_article_pagination(self):
         """Test article pagination"""
-        # Create 15 more articles for pagination testing
+        # 额外创建 15 篇文章，让结果超过默认页大小，从而覆盖分页逻辑。
         for i in range(15):
             Article.objects.create(
                 title=f"Article {i}",
@@ -83,7 +84,7 @@ class ArticleAPITests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data["results"]), 10)
-        self.assertEqual(response.data["count"], 17)  # 15 + 2 from setUp
+        self.assertEqual(response.data["count"], 17)  # 15 篇新增文章 + setUp 的 2 篇
 
     def test_invalid_article_detail(self):
         """Test getting detail of non-existent article"""
@@ -104,6 +105,7 @@ class ArticleAPITests(APITestCase):
 
 class ArticleFilterTests(APITestCase):
     def setUp(self):
+        # 两篇文章分别使用不同标题和作者，确保过滤条件能明确命中单条记录。
         self.articles = [
             Article.objects.create(
                 title="Python Article",

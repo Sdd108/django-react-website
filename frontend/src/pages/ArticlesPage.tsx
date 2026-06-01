@@ -24,6 +24,7 @@ interface Article {
 }
 
 interface PaginatedResponse {
+  // DRF 分页响应固定包含 count/next/previous/results，列表页只渲染当前页 results。
   count: number;
   next: string | null;
   previous: string | null;
@@ -31,6 +32,7 @@ interface PaginatedResponse {
 }
 
 const fetchArticles = async (): Promise<Article[]> => {
+  // Vite dev server 会把 /api 代理到 Django，因此前端不需要硬编码后端域名。
   const res = await fetch("/api/articles/");
   if (!res.ok) throw new Error("Failed to fetch articles");
   const data: PaginatedResponse = await res.json();
@@ -39,12 +41,14 @@ const fetchArticles = async (): Promise<Article[]> => {
 
 const ArticlesPage = () => {
   const navigate = useNavigate();
+  // React Query 管理加载、错误和缓存刷新状态，减少组件内手写副作用。
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ["articles"],
     queryFn: fetchArticles,
   });
 
   if (isLoading) {
+    // 骨架屏保持和真实卡片相近的高度，降低数据加载时的布局跳动。
     return (
       <Container maxW="900px" py={12}>
         <VStack gap={6} alignItems="stretch">
@@ -64,6 +68,7 @@ const ArticlesPage = () => {
   }
 
   if (isError) {
+    // 请求失败时保留重试入口，适合后端暂时未启动或网络异常。
     return (
       <Container maxW="900px" py={20}>
         <VStack gap={6} textAlign="center">
@@ -80,6 +85,7 @@ const ArticlesPage = () => {
   }
 
   if (!data || data.length === 0) {
+    // 空列表仍提供创建入口，方便首次初始化内容。
     return (
       <Container maxW="900px" py={20}>
         <VStack gap={4} textAlign="center">
@@ -99,6 +105,7 @@ const ArticlesPage = () => {
   }
 
   const formatDate = (dateStr: string) => {
+    // 统一使用美国英文日期格式，和当前英文界面文案保持一致。
     return new Date(dateStr).toLocaleDateString("en-US", {
       year: "numeric",
       month: "long",
@@ -107,6 +114,7 @@ const ArticlesPage = () => {
   };
 
   const getExcerpt = (content: string, maxLen = 200) => {
+    // 列表页只展示摘要，详情页再展示完整正文。
     return content.length > maxLen
       ? content.slice(0, maxLen).trimEnd() + "..."
       : content;
@@ -140,6 +148,7 @@ const ArticlesPage = () => {
 
         <VStack gap={4}>
           {data.map((article) => (
+            // 整张卡片可点击，减少用户必须点击小按钮的操作成本。
             <Card.Root
               key={article.id}
               variant="elevated"

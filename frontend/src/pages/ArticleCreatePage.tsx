@@ -34,6 +34,7 @@ interface Article {
 }
 
 interface FieldErrors {
+  // 字段名与 DRF validation error key 保持一致，便于直接映射到 Chakra Field。
   title?: string;
   author?: string;
   published_date?: string;
@@ -43,6 +44,7 @@ interface FieldErrors {
 }
 
 const createArticle = async (data: ArticleFormData): Promise<Article> => {
+  // datetime-local 没有时区信息，提交前转换成 ISO 字符串交给 Django DateTimeField。
   const payload = {
     ...data,
     published_date: data.published_date
@@ -57,6 +59,7 @@ const createArticle = async (data: ArticleFormData): Promise<Article> => {
   });
 
   if (!res.ok) {
+    // DRF 通常返回 JSON 字段错误；非 JSON 错误兜底为表单级错误。
     throw await res
       .json()
       .catch(() => ({ non_field_errors: ["Failed to create article."] }));
@@ -68,6 +71,7 @@ const createArticle = async (data: ArticleFormData): Promise<Article> => {
 const ArticleCreatePage = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  // 表单状态保持为字符串，和 input/textarea 的 value 类型一致。
   const [form, setForm] = useState<ArticleFormData>({
     title: "",
     author: "",
@@ -80,6 +84,7 @@ const ArticleCreatePage = () => {
   const mutation = useMutation({
     mutationFn: createArticle,
     onSuccess: (article) => {
+      // 创建成功后刷新文章列表缓存，并跳转到刚创建的详情页。
       queryClient.invalidateQueries({ queryKey: ["articles"] });
       toaster.create({
         title: "Article created",
@@ -91,6 +96,7 @@ const ArticleCreatePage = () => {
     },
     onError: (error: unknown) => {
       if (error && typeof error === "object") {
+        // 将 DRF 的 { field: ["message"] } 压平成每个字段展示第一条错误。
         const errs = error as Record<string, string[] | string>;
         const mapped: FieldErrors = {};
 
@@ -118,6 +124,7 @@ const ArticleCreatePage = () => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
 
+    // 用户修改字段时清除该字段旧错误，避免已经修正后仍显示错误文案。
     if (fieldErrors[name as keyof FieldErrors]) {
       setFieldErrors((prev) => ({ ...prev, [name]: undefined }));
     }
@@ -125,6 +132,7 @@ const ArticleCreatePage = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    // 每次提交前清空旧错误，避免后端新响应和旧状态混在一起。
     setFieldErrors({});
     mutation.mutate(form);
   };

@@ -4,10 +4,11 @@ import { MemoryRouter } from "react-router-dom";
 import type { ReactNode } from "react";
 
 /**
- * Wraps a component in the providers needed for testing:
- * QueryClient, Chakra UI, and MemoryRouter.
+ * 为组件测试统一包裹运行时依赖：
+ * React Query 缓存、Chakra UI Provider，以及可指定初始路径的 MemoryRouter。
  */
 export function createTestWrapper(initialRoute = "/") {
+  // 每个测试创建独立 QueryClient，避免缓存数据在测试之间互相污染。
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false } },
   });
