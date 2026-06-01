@@ -166,7 +166,7 @@ const ContactPage = () => {
                 name="phone"
                 value={form.phone}
                 onChange={handleChange}
-                placeholder="+1 234 567 890"
+                placeholder="137 8888 9999"
               />
             </Field.Root>
 
