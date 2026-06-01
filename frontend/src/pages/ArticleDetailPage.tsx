@@ -16,6 +16,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   FaArrowLeft,
   FaCalendar,
+  FaClock,
   FaEdit,
   FaTrash,
   FaUser,
@@ -28,6 +29,7 @@ interface Article {
   content: string;
   author: string;
   published_date: string;
+  last_updated: string;
   source_url: string;
 }
 
@@ -155,14 +157,18 @@ const ArticleDetailPage = () => {
             {article.title}
           </Heading>
 
-          <HStack gap={4} color="fg.muted" fontSize="sm">
+          <HStack gap={4} color="fg.muted" fontSize="sm" flexWrap="wrap">
             <Box as="span" display="inline-flex" alignItems="center" gap={1}>
               <FaUser size={12} />
               {article.author}
             </Box>
             <Box as="span" display="inline-flex" alignItems="center" gap={1}>
               <FaCalendar size={12} />
-              {formatDate(article.published_date)}
+              Published {formatDate(article.published_date)}
+            </Box>
+            <Box as="span" display="inline-flex" alignItems="center" gap={1}>
+              <FaClock size={12} />
+              Last updated {formatDate(article.last_updated)}
             </Box>
           </HStack>
 

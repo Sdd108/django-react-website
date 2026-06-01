@@ -38,6 +38,7 @@ class ArticleAPIEndpointTests(APITestCase):
         self.assertIn("count", response.data)
         self.assertEqual(response.data["count"], 1)
         self.assertEqual(len(response.data["results"]), 1)
+        self.assertIn("last_updated", response.data["results"][0])
 
     def test_article_detail_endpoint(self):
         """Test GET /api/articles/:id/ returns single article"""
@@ -47,6 +48,7 @@ class ArticleAPIEndpointTests(APITestCase):
         self.assertEqual(response.data["id"], self.article.id)
         self.assertEqual(response.data["title"], "API Test Article")
         self.assertEqual(response.data["author"], "API Tester")
+        self.assertEqual(response.data["last_updated"], response.data["updated_at"])
 
     def test_article_not_found(self):
         """Test GET /api/articles/999/ returns 404"""
@@ -77,6 +79,7 @@ class ArticleAPIEndpointTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data["title"], "Created Article")
+        self.assertIn("last_updated", response.data)
         self.assertEqual(Article.objects.count(), 2)
 
     def test_create_article_requires_title(self):
@@ -129,6 +132,7 @@ class ArticleAPIEndpointTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["title"], "Updated API Article")
+        self.assertEqual(response.data["last_updated"], response.data["updated_at"])
         self.assertEqual(self.article.content, "## Updated Markdown\n\n- Saved from API")
 
     def test_delete_article_endpoint(self):

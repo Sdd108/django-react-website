@@ -17,7 +17,14 @@ import {
 import ArticleMarkdown from "@/components/ArticleMarkdown";
 import { toaster } from "@/components/ui/toaster";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { FaArrowLeft, FaCalendar, FaLink, FaSave, FaUser } from "react-icons/fa";
+import {
+  FaArrowLeft,
+  FaCalendar,
+  FaLink,
+  FaSave,
+  FaTimes,
+  FaUser,
+} from "react-icons/fa";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
 interface ArticleFormData {
@@ -103,7 +110,8 @@ const updateArticle = async ({
 const ArticleEditForm = ({ article }: { article: Article }) => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const [form, setForm] = useState<ArticleFormData>(() => toFormData(article));
+  const initialForm = toFormData(article);
+  const [form, setForm] = useState<ArticleFormData>(() => initialForm);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
 
   const mutation = useMutation({
@@ -159,6 +167,20 @@ const ArticleEditForm = ({ article }: { article: Article }) => {
 
     setFieldErrors({});
     mutation.mutate({ id: String(article.id), data: form });
+  };
+
+  const handleCancel = () => {
+    const hasUnsavedChanges =
+      JSON.stringify(form) !== JSON.stringify(initialForm);
+
+    if (
+      hasUnsavedChanges &&
+      !window.confirm("Discard your changes and return to the article?")
+    ) {
+      return;
+    }
+
+    navigate(`/articles/${article.id}`);
   };
 
   return (
@@ -316,16 +338,29 @@ const ArticleEditForm = ({ article }: { article: Article }) => {
               <Text color="fg.error">{fieldErrors.non_field_errors}</Text>
             )}
 
-            <Button
-              type="submit"
-              colorPalette="blue"
-              size="lg"
-              loading={mutation.isPending}
-              loadingText="Saving..."
-            >
-              <FaSave style={{ marginRight: 6 }} />
-              Save Changes
-            </Button>
+            <HStack gap={3} flexWrap="wrap">
+              <Button
+                type="submit"
+                colorPalette="blue"
+                size="lg"
+                loading={mutation.isPending}
+                loadingText="Saving..."
+              >
+                <FaSave style={{ marginRight: 6 }} />
+                Save Changes
+              </Button>
+
+              <Button
+                type="button"
+                variant="outline"
+                size="lg"
+                onClick={handleCancel}
+                disabled={mutation.isPending}
+              >
+                <FaTimes style={{ marginRight: 6 }} />
+                Cancel
+              </Button>
+            </HStack>
           </VStack>
         </form>
       </VStack>
