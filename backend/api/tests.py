@@ -58,3 +58,51 @@ class ArticleAPIEndpointTests(APITestCase):
         response = self.client.get(url)
         self.assertIn("next", response.data)
         self.assertIn("previous", response.data)
+
+    def test_create_article_endpoint(self):
+        """Test POST /api/articles/ creates an article"""
+        url = reverse("article-list")
+        data = {
+            "title": "Created Article",
+            "content": "This article was created through the API.",
+            "author": "API Author",
+            "published_date": "2026-01-10T12:30:00Z",
+            "source_url": "https://example.com/created-article",
+        }
+
+        response = self.client.post(url, data, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data["title"], "Created Article")
+        self.assertEqual(Article.objects.count(), 2)
+
+    def test_create_article_requires_title(self):
+        """Test POST /api/articles/ returns validation errors"""
+        url = reverse("article-list")
+        data = {
+            "content": "Missing a required title.",
+            "author": "API Author",
+            "published_date": "2026-01-10T12:30:00Z",
+            "source_url": "https://example.com/missing-title",
+        }
+
+        response = self.client.post(url, data, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("title", response.data)
+
+    def test_create_article_source_url_optional(self):
+        """Test POST /api/articles/ succeeds without source_url"""
+        url = reverse("article-list")
+        data = {
+            "title": "Article Without Source",
+            "content": "This article does not have a source URL.",
+            "author": "API Author",
+            "published_date": "2026-01-10T12:30:00Z",
+        }
+
+        response = self.client.post(url, data, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data["source_url"], "")
+        self.assertEqual(Article.objects.count(), 2)

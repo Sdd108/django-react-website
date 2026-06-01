@@ -6,7 +6,7 @@ class Article(models.Model):
     content = models.TextField()
     author = models.CharField(max_length=100)
     published_date = models.DateTimeField()
-    source_url = models.URLField()
+    source_url = models.URLField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

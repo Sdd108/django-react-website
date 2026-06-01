@@ -11,8 +11,8 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { useQuery } from "@tanstack/react-query";
-import { FaCalendar, FaUser } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
+import { FaCalendar, FaPlus, FaUser } from "react-icons/fa";
+import { Link, useNavigate } from "react-router-dom";
 
 interface Article {
   id: number;
@@ -87,6 +87,12 @@ const ArticlesPage = () => {
           <Text color="fg.muted" fontSize="lg">
             Check back soon for new content.
           </Text>
+          <Link to="/articles/new" style={{ textDecoration: "none" }}>
+            <Button colorPalette="blue">
+              <FaPlus style={{ marginRight: 6 }} />
+              Create Article
+            </Button>
+          </Link>
         </VStack>
       </Container>
     );
@@ -109,12 +115,28 @@ const ArticlesPage = () => {
   return (
     <Container maxW="900px" py={12}>
       <VStack gap={8} alignItems="stretch">
-        <Heading as="h1" size="3xl" fontWeight="extrabold">
-          Articles
-        </Heading>
-        <Text color="fg.muted" fontSize="lg">
-          In-depth articles on web development, databases, and more.
-        </Text>
+        <HStack
+          justifyContent="space-between"
+          alignItems="flex-start"
+          flexWrap="wrap"
+          gap={4}
+        >
+          <VStack alignItems="flex-start" gap={2}>
+            <Heading as="h1" size="3xl" fontWeight="extrabold">
+              Articles
+            </Heading>
+            <Text color="fg.muted" fontSize="lg">
+              In-depth articles on web development, databases, and more.
+            </Text>
+          </VStack>
+
+          <Link to="/articles/new" style={{ textDecoration: "none" }}>
+            <Button colorPalette="blue">
+              <FaPlus style={{ marginRight: 6 }} />
+              Create Article
+            </Button>
+          </Link>
+        </HStack>
 
         <VStack gap={4}>
           {data.map((article) => (

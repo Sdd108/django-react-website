@@ -1,4 +1,4 @@
-from rest_framework import viewsets
+from rest_framework import mixins, viewsets
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.filters import SearchFilter
 from django_filters.rest_framework import DjangoFilterBackend
@@ -12,7 +12,7 @@ class StandardResultsSetPagination(PageNumberPagination):
     max_page_size = 100
 
 
-class ArticleViewSet(viewsets.ReadOnlyModelViewSet):
+class ArticleViewSet(mixins.CreateModelMixin, viewsets.ReadOnlyModelViewSet):
     pagination_class = StandardResultsSetPagination
     queryset = Article.objects.all().order_by("-published_date")
     serializer_class = ArticleSerializer
