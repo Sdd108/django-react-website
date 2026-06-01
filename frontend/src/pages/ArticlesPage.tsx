@@ -114,10 +114,19 @@ const ArticlesPage = () => {
   };
 
   const getExcerpt = (content: string, maxLen = 200) => {
-    // 列表页只展示摘要，详情页再展示完整正文。
-    return content.length > maxLen
-      ? content.slice(0, maxLen).trimEnd() + "..."
-      : content;
+    // 列表页只展示纯文本摘要，避免把 Markdown 标记直接露出来。
+    const plainText = content
+      .replace(/```[\s\S]*?```/g, " ")
+      .replace(/`([^`]+)`/g, "$1")
+      .replace(/!\[[^\]]*]\([^)]*\)/g, " ")
+      .replace(/\[([^\]]+)]\([^)]*\)/g, "$1")
+      .replace(/[#>*_~|-]/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+
+    return plainText.length > maxLen
+      ? plainText.slice(0, maxLen).trimEnd() + "..."
+      : plainText;
   };
 
   return (

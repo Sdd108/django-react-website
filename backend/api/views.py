@@ -14,8 +14,13 @@ class StandardResultsSetPagination(PageNumberPagination):
     max_page_size = 100
 
 
-class ArticleViewSet(mixins.CreateModelMixin, viewsets.ReadOnlyModelViewSet):
-    # 组合 CreateModelMixin 和 ReadOnlyModelViewSet：开放创建、列表、详情，避免默认暴露更新和删除。
+class ArticleViewSet(
+    mixins.CreateModelMixin,
+    mixins.UpdateModelMixin,
+    mixins.DestroyModelMixin,
+    viewsets.ReadOnlyModelViewSet,
+):
+    # 组合 CRUD 需要的 mixin：开放创建、编辑、删除、列表和详情。
     pagination_class = StandardResultsSetPagination
     # 明确按发布时间倒序排列，和模型 Meta 保持一致，也让接口行为更直观。
     queryset = Article.objects.all().order_by("-published_date")

@@ -111,3 +111,32 @@ class ArticleAPIEndpointTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data["source_url"], "")
         self.assertEqual(Article.objects.count(), 2)
+
+    def test_update_article_endpoint(self):
+        """Test PUT /api/articles/:id/ updates an article"""
+        # 编辑接口保存 Markdown 原文，不在后端做渲染或转换。
+        url = reverse("article-detail", args=[self.article.id])
+        data = {
+            "title": "Updated API Article",
+            "content": "## Updated Markdown\n\n- Saved from API",
+            "author": "Updated Author",
+            "published_date": "2026-02-10T09:15:00Z",
+            "source_url": "",
+        }
+
+        response = self.client.put(url, data, format="json")
+        self.article.refresh_from_db()
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["title"], "Updated API Article")
+        self.assertEqual(self.article.content, "## Updated Markdown\n\n- Saved from API")
+
+    def test_delete_article_endpoint(self):
+        """Test DELETE /api/articles/:id/ deletes an article"""
+        # 删除接口应移除数据库记录，并返回 DRF 标准 204 响应。
+        url = reverse("article-detail", args=[self.article.id])
+
+        response = self.client.delete(url)
+
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(Article.objects.count(), 0)

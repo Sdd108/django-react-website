@@ -9,15 +9,16 @@ import {
   Input,
   Separator,
   SimpleGrid,
+  Skeleton,
   Text,
   Textarea,
   VStack,
 } from "@chakra-ui/react";
 import ArticleMarkdown from "@/components/ArticleMarkdown";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { FaArrowLeft, FaCalendar, FaLink, FaUser } from "react-icons/fa";
-import { Link, useNavigate } from "react-router-dom";
 import { toaster } from "@/components/ui/toaster";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { FaArrowLeft, FaCalendar, FaLink, FaSave, FaUser } from "react-icons/fa";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
 interface ArticleFormData {
   title: string;
@@ -37,7 +38,7 @@ interface Article {
 }
 
 interface FieldErrors {
-  // 字段名与 DRF validation error key 保持一致，便于直接映射到 Chakra Field。
+  // 字段名和 DRF validation error key 保持一致，便于直接渲染字段错误。
   title?: string;
   author?: string;
   published_date?: string;
@@ -46,8 +47,36 @@ interface FieldErrors {
   non_field_errors?: string;
 }
 
-const createArticle = async (data: ArticleFormData): Promise<Article> => {
-  // datetime-local 没有时区信息，提交前转换成 ISO 字符串交给 Django DateTimeField。
+const fetchArticle = async (id: string): Promise<Article> => {
+  // 编辑页先加载当前文章，再把 API 数据映射到表单字段。
+  const res = await fetch(`/api/articles/${id}/`);
+  if (!res.ok) throw new Error("Article not found");
+  return res.json();
+};
+
+const toDateTimeLocalValue = (dateStr: string) => {
+  // datetime-local 需要 YYYY-MM-DDTHH:mm 格式；这里按用户本地时区展示。
+  const date = new Date(dateStr);
+  const offset = date.getTimezoneOffset() * 60000;
+  return new Date(date.getTime() - offset).toISOString().slice(0, 16);
+};
+
+const toFormData = (article: Article): ArticleFormData => ({
+  title: article.title,
+  author: article.author,
+  published_date: toDateTimeLocalValue(article.published_date),
+  source_url: article.source_url,
+  content: article.content,
+});
+
+const updateArticle = async ({
+  id,
+  data,
+}: {
+  id: string;
+  data: ArticleFormData;
+}): Promise<Article> => {
+  // 后端仍保存 Markdown 原文；只有 published_date 在提交前转换成 ISO 字符串。
   const payload = {
     ...data,
     published_date: data.published_date
@@ -55,51 +84,44 @@ const createArticle = async (data: ArticleFormData): Promise<Article> => {
       : data.published_date,
   };
 
-  const res = await fetch("/api/articles/", {
-    method: "POST",
+  const res = await fetch(`/api/articles/${id}/`, {
+    method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   });
 
   if (!res.ok) {
-    // DRF 通常返回 JSON 字段错误；非 JSON 错误兜底为表单级错误。
+    // DRF 校验错误通常是 JSON；非 JSON 响应兜底成表单级错误。
     throw await res
       .json()
-      .catch(() => ({ non_field_errors: ["Failed to create article."] }));
+      .catch(() => ({ non_field_errors: ["Failed to update article."] }));
   }
 
   return res.json();
 };
 
-const ArticleCreatePage = () => {
+const ArticleEditForm = ({ article }: { article: Article }) => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  // 表单状态保持为字符串，和 input/textarea 的 value 类型一致。
-  const [form, setForm] = useState<ArticleFormData>({
-    title: "",
-    author: "",
-    published_date: "",
-    source_url: "",
-    content: "",
-  });
+  const [form, setForm] = useState<ArticleFormData>(() => toFormData(article));
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
 
   const mutation = useMutation({
-    mutationFn: createArticle,
-    onSuccess: (article) => {
-      // 创建成功后刷新文章列表缓存，并跳转到刚创建的详情页。
+    mutationFn: updateArticle,
+    onSuccess: (updatedArticle) => {
+      queryClient.setQueryData(["article", String(updatedArticle.id)], updatedArticle);
       queryClient.invalidateQueries({ queryKey: ["articles"] });
       toaster.create({
-        title: "Article created",
-        description: "Your article is now available.",
+        title: "Article updated",
+        description: "Your changes have been saved.",
         type: "success",
         duration: 5000,
       });
-      navigate(`/articles/${article.id}`);
+      navigate(`/articles/${updatedArticle.id}`);
     },
     onError: (error: unknown) => {
       if (error && typeof error === "object") {
-        // 将 DRF 的 { field: ["message"] } 压平成每个字段展示第一条错误。
+        // 将 { field: ["message"] } 压平成每个字段展示第一条错误。
         const errs = error as Record<string, string[] | string>;
         const mapped: FieldErrors = {};
 
@@ -127,7 +149,6 @@ const ArticleCreatePage = () => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
 
-    // 用户修改字段时清除该字段旧错误，避免已经修正后仍显示错误文案。
     if (fieldErrors[name as keyof FieldErrors]) {
       setFieldErrors((prev) => ({ ...prev, [name]: undefined }));
     }
@@ -135,27 +156,27 @@ const ArticleCreatePage = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // 每次提交前清空旧错误，避免后端新响应和旧状态混在一起。
+
     setFieldErrors({});
-    mutation.mutate(form);
+    mutation.mutate({ id: String(article.id), data: form });
   };
 
   return (
     <Container maxW="1100px" py={12}>
       <VStack gap={8} alignItems="stretch">
-        <Link to="/articles" style={{ textDecoration: "none" }}>
+        <Link to={`/articles/${article.id}`} style={{ textDecoration: "none" }}>
           <Button variant="ghost" size="sm">
             <FaArrowLeft style={{ marginRight: 6 }} />
-            Back to Articles
+            Back to Article
           </Button>
         </Link>
 
         <VStack gap={3} alignItems="flex-start">
           <Heading as="h1" size="4xl" fontWeight="extrabold">
-            Create Article
+            Edit Article
           </Heading>
           <Text color="fg.muted" fontSize="lg">
-            Publish a new article to the site.
+            Update the article content and review the Markdown preview.
           </Text>
         </VStack>
 
@@ -265,7 +286,7 @@ const ArticleCreatePage = () => {
                     value={form.content}
                     onChange={handleChange}
                     placeholder={
-                      "Write Markdown, e.g. ## Heading\\n\\n- First point"
+                      "Write Markdown, e.g. ## Heading\n\n- First point"
                     }
                     rows={18}
                   />
@@ -300,10 +321,10 @@ const ArticleCreatePage = () => {
               colorPalette="blue"
               size="lg"
               loading={mutation.isPending}
-              loadingText="Publishing..."
-              width="100%"
+              loadingText="Saving..."
             >
-              Publish Article
+              <FaSave style={{ marginRight: 6 }} />
+              Save Changes
             </Button>
           </VStack>
         </form>
@@ -312,4 +333,50 @@ const ArticleCreatePage = () => {
   );
 };
 
-export default ArticleCreatePage;
+const ArticleEditPage = () => {
+  const { id } = useParams<{ id: string }>();
+
+  const {
+    data: article,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["article", id],
+    queryFn: () => fetchArticle(id!),
+    enabled: !!id,
+  });
+
+  if (isLoading) {
+    return (
+      <Container maxW="1100px" py={12}>
+        <VStack gap={6} alignItems="stretch">
+          <Skeleton height="20px" width="120px" />
+          <Skeleton height="48px" width="260px" />
+          <Skeleton height="520px" />
+        </VStack>
+      </Container>
+    );
+  }
+
+  if (isError || !article) {
+    return (
+      <Container maxW="800px" py={20}>
+        <VStack gap={6} textAlign="center">
+          <Heading size="2xl">Article Not Found</Heading>
+          <Text color="fg.muted" fontSize="lg">
+            The article you're trying to edit doesn't exist or has been removed.
+          </Text>
+          <Link to="/articles">
+            <Button colorPalette="blue" variant="solid">
+              Back to Articles
+            </Button>
+          </Link>
+        </VStack>
+      </Container>
+    );
+  }
+
+  return <ArticleEditForm article={article} />;
+};
+
+export default ArticleEditPage;

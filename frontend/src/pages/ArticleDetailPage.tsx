@@ -10,9 +10,17 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import { useQuery } from "@tanstack/react-query";
-import { FaArrowLeft, FaCalendar, FaUser } from "react-icons/fa";
-import { Link, useParams } from "react-router-dom";
+import ArticleMarkdown from "@/components/ArticleMarkdown";
+import { toaster } from "@/components/ui/toaster";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  FaArrowLeft,
+  FaCalendar,
+  FaEdit,
+  FaTrash,
+  FaUser,
+} from "react-icons/fa";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
 interface Article {
   id: number;
@@ -30,9 +38,17 @@ const fetchArticle = async (id: string): Promise<Article> => {
   return res.json();
 };
 
+const deleteArticle = async (id: number): Promise<void> => {
+  // 删除操作不需要响应体；失败时交给 mutation 的 onError 展示提示。
+  const res = await fetch(`/api/articles/${id}/`, { method: "DELETE" });
+  if (!res.ok) throw new Error("Failed to delete article");
+};
+
 const ArticleDetailPage = () => {
   // id 来自 /articles/:id；enabled 确保 id 存在时才发请求。
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const {
     data: article,
@@ -43,6 +59,39 @@ const ArticleDetailPage = () => {
     queryFn: () => fetchArticle(id!),
     enabled: !!id,
   });
+
+  const deleteMutation = useMutation({
+    mutationFn: deleteArticle,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["articles"] });
+      toaster.create({
+        title: "Article deleted",
+        description: "The article has been removed.",
+        type: "success",
+        duration: 5000,
+      });
+      navigate("/articles");
+    },
+    onError: () => {
+      toaster.create({
+        title: "Delete failed",
+        description: "Please try again later.",
+        type: "error",
+        duration: 5000,
+      });
+    },
+  });
+
+  const handleDelete = () => {
+    if (!article) return;
+
+    const confirmed = window.confirm(
+      "Delete this article? This action cannot be undone.",
+    );
+    if (confirmed) {
+      deleteMutation.mutate(article.id);
+    }
+  };
 
   if (isLoading) {
     // 用骨架屏占位标题、元信息和正文区域，避免加载时页面突然跳动。
@@ -130,14 +179,35 @@ const ArticleDetailPage = () => {
               </a>
             </Badge>
           )}
+
+          <HStack gap={3} flexWrap="wrap" pt={2}>
+            <Link
+              to={`/articles/${article.id}/edit`}
+              style={{ textDecoration: "none" }}
+            >
+              <Button colorPalette="blue" variant="outline" size="sm">
+                <FaEdit style={{ marginRight: 6 }} />
+                Edit
+              </Button>
+            </Link>
+            <Button
+              colorPalette="red"
+              variant="outline"
+              size="sm"
+              onClick={handleDelete}
+              loading={deleteMutation.isPending}
+              loadingText="Deleting..."
+            >
+              <FaTrash style={{ marginRight: 6 }} />
+              Delete
+            </Button>
+          </HStack>
         </VStack>
 
         <Separator />
 
-        {/* 正文保留换行，支持普通文本文章的段落结构。 */}
-        <Text fontSize="md" lineHeight="relaxed" whiteSpace="pre-wrap">
-          {article.content}
-        </Text>
+        {/* 正文按 Markdown 渲染；原始 Markdown 仍由后端 content 字段保存。 */}
+        <ArticleMarkdown content={article.content} />
       </VStack>
     </Container>
   );
