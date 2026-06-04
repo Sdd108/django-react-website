@@ -7,12 +7,131 @@ import type { ThemeProviderProps } from "next-themes";
 import * as React from "react";
 import { LuMoon, LuSun } from "react-icons/lu";
 
+// ============================================================================
+// 带 3 小时 TTL 的自定义 localStorage 存储
+//
+// next-themes v0.4.6 没有 storage prop，因此通过拦截原生 localStorage
+// 的 getItem / setItem 实现透明的时间戳包装。next-themes 内部读写
+// localStorage 时会自动经过此层，对组件完全透明。
+//
+// 行为：
+//   - setItem 写入 { value, timestamp } JSON
+//   - getItem 检查 TTL：过期则返回 null（next-themes 回退到 defaultTheme）
+//   - 旧格式（纯字符串）视为过期并清除
+//   - 只拦截 "theme" 这个 key，其他 key 不受影响
+// ============================================================================
+
+const THEME_KEY = "theme";
+const THEME_TTL_MS = 3 * 60 * 60 * 1000; // 3 小时
+
+// 捕获原始 Storage.prototype 方法引用（导出供测试访问原生存储）
+const _origGetItem =
+  typeof window !== "undefined"
+    ? Object.getPrototypeOf(localStorage).getItem
+    : null;
+const _origSetItem =
+  typeof window !== "undefined"
+    ? Object.getPrototypeOf(localStorage).setItem
+    : null;
+const _origRemoveItem =
+  typeof window !== "undefined"
+    ? Object.getPrototypeOf(localStorage).removeItem
+    : null;
+
+// 导出原生引用，测试中可用于绕过 monkey-patch 直接读写原始存储
+export { _origGetItem, _origSetItem, _origRemoveItem };
+
+if (
+  typeof window !== "undefined" &&
+  _origGetItem &&
+  _origSetItem &&
+  _origRemoveItem
+) {
+  // 通过修改 Storage.prototype 实现透明的 TTL 包装。
+  // 不能直接替换 localStorage 上的 own property —— jsdom（以及某些浏览器）
+  // 会静默忽略对 localStorage.getItem/setItem 的赋值。
+  const StorageProto = Object.getPrototypeOf(localStorage);
+
+  StorageProto.getItem = function (key: string): string | null {
+    if (key !== THEME_KEY) return _origGetItem.call(this, key);
+    const raw = _origGetItem.call(this, key);
+    if (!raw) return null;
+    try {
+      const { value, timestamp }: { value: string; timestamp: number } =
+        JSON.parse(raw);
+      if (Date.now() - timestamp > THEME_TTL_MS) {
+        // 超过 3 小时，清除过期记录 → next-themes 将使用 defaultTheme
+        _origRemoveItem.call(this, THEME_KEY);
+        return null;
+      }
+      return value;
+    } catch {
+      // 旧格式（纯字符串），无法验证时间戳，视为过期并清除
+      _origRemoveItem.call(this, THEME_KEY);
+      return null;
+    }
+  };
+
+  StorageProto.setItem = function (key: string, value: string): void {
+    if (key !== THEME_KEY) return _origSetItem.call(this, key, value);
+    _origSetItem.call(
+      this,
+      key,
+      JSON.stringify({ value, timestamp: Date.now() }),
+    );
+  };
+
+  // removeItem 保持不变，next-themes 需要清除记录时仍可用原生实现
+  StorageProto.removeItem = function (key: string): void {
+    _origRemoveItem.call(this, key);
+  };
+}
+
+// ============================================================================
+// 系统主题检测 & 当地时间回退
+// 当浏览器不支持 prefers-color-scheme 时，按当地时间判断：
+//   6:00–17:59 → light（白天）
+//  18:00–5:59  → dark（夜晚）
+// ============================================================================
+
+/** 按当地时间判断当前应使用的主题（导出供测试） */
+export function getTimeBasedTheme(): "light" | "dark" {
+  const hour = new Date().getHours();
+  return hour >= 6 && hour < 18 ? "light" : "dark";
+}
+
+/** 检测浏览器是否支持 prefers-color-scheme 媒体查询（导出供测试） */
+export function supportsSystemTheme(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    const mql = window.matchMedia("(prefers-color-scheme: dark)");
+    // 不支持的媒体查询会返回 "not all"
+    return mql.media !== "not all" && mql.media !== "invalid";
+  } catch {
+    return false;
+  }
+}
+
+// ============================================================================
+// 导出组件和 hooks
+// ============================================================================
+
 export interface ColorModeProviderProps extends ThemeProviderProps {}
 
 export function ColorModeProvider(props: ColorModeProviderProps) {
+  const canUseSystem = supportsSystemTheme();
+
   return (
-    // next-themes 通过 class 切换 light/dark，Chakra 会基于这个 class 应用语义色。
-    <ThemeProvider attribute="class" disableTransitionOnChange {...props} />
+    // 默认跟随系统主题；浏览器不支持时回退到当地时间。
+    // 用户手动切换后持久化到 localStorage，3 小时后自动过期。
+    // 通过 ...props 允许外部覆盖 enableSystem / defaultTheme 等参数。
+    <ThemeProvider
+      attribute="class"
+      enableSystem={canUseSystem}
+      defaultTheme={canUseSystem ? "system" : getTimeBasedTheme()}
+      disableTransitionOnChange
+      {...props}
+    />
   );
 }
 
@@ -25,12 +144,34 @@ export interface UseColorModeReturn {
 }
 
 export function useColorMode(): UseColorModeReturn {
-  const { resolvedTheme, setTheme, forcedTheme } = useTheme();
+  const { resolvedTheme, setTheme, theme, systemTheme, forcedTheme } =
+    useTheme();
+
+  // 系统不支持色彩主题时，用当地时间作为回退的"系统"参考值，
+  // 确保 toggle 能正确判断何时回到跟随系统模式。
+  const effectiveSystem = supportsSystemTheme()
+    ? (systemTheme as "light" | "dark" | undefined)
+    : getTimeBasedTheme();
+
   // forcedTheme 优先级高于用户选择，用于未来需要锁定主题的页面。
   const colorMode = forcedTheme || resolvedTheme;
+
   const toggleColorMode = () => {
-    setTheme(resolvedTheme === "dark" ? "light" : "dark");
+    if (theme === "system") {
+      // 当前跟随系统 → 显式切换到与当前外观相反的主题
+      setTheme(resolvedTheme === "dark" ? "light" : "dark");
+    } else {
+      // 当前为手动设置 → 切换到相反主题，
+      // 如果相反主题恰好与系统一致则回到跟随系统模式
+      const opposite = resolvedTheme === "dark" ? "light" : "dark";
+      if (opposite === effectiveSystem) {
+        setTheme("system");
+      } else {
+        setTheme(opposite);
+      }
+    }
   };
+
   return {
     colorMode: colorMode as ColorMode,
     setColorMode: setTheme,
