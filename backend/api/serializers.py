@@ -4,6 +4,7 @@ from articles.models import Article
 
 class ArticleSerializer(serializers.ModelSerializer):
     last_updated = serializers.DateTimeField(source="updated_at", read_only=True)
+    author_user = serializers.ReadOnlyField(source="author_user.username")
 
     class Meta:
         # 直接序列化 Article 模型，前端列表、详情和创建接口共用这一份字段定义。
@@ -13,11 +14,20 @@ class ArticleSerializer(serializers.ModelSerializer):
             "title",
             "content",
             "author",
+            "author_user",
             "published_date",
             "source_url",
+            "is_published",
+            "is_pinned",
             "created_at",
             "updated_at",
             "last_updated",
         ]
         # 这些字段由数据库或 Django 自动生成，客户端不应该在创建文章时覆盖。
-        read_only_fields = ["id", "created_at", "updated_at", "last_updated"]
+        read_only_fields = [
+            "id",
+            "created_at",
+            "updated_at",
+            "last_updated",
+            "author_user",
+        ]

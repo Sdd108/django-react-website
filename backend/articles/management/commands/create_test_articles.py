@@ -1,4 +1,5 @@
 from django.core.management.base import BaseCommand
+from django.contrib.auth import get_user_model
 from django.utils import timezone
 from articles.models import Article
 from datetime import timedelta
@@ -26,6 +27,19 @@ class Command(BaseCommand):
         return "\n\n".join(random.sample(paragraphs, num_paragraphs))
 
     def handle(self, *args, **kwargs):
+        User = get_user_model()
+        owner, created = User.objects.get_or_create(
+            username="admin",
+            defaults={
+                "email": "admin@example.com",
+                "is_staff": True,
+                "is_superuser": True,
+            },
+        )
+        if created:
+            owner.set_unusable_password()
+            owner.save(update_fields=["password"])
+
         # 主题和作者成对出现，让测试数据看起来更接近真实技术博客。
         topics = [
             ("Understanding Database Indexing", "Database Expert"),
@@ -47,6 +61,7 @@ class Command(BaseCommand):
 
             # 发布时间按天递减，确保列表排序和分页在测试时有稳定数据。
             article = Article.objects.create(
+                author_user=owner,
                 title=title,
                 content=self.get_random_paragraphs(random.randint(3, 5)),
                 author=author,

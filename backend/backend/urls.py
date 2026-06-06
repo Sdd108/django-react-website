@@ -11,6 +11,7 @@ def index(request):
             "message": "Welcome to the API",
             "endpoints": {
                 "articles": "/api/articles/",
+                "auth": "/api/auth/",
                 "admin": "/admin/",
             },
         }
@@ -24,6 +25,8 @@ urlpatterns = [
     path("api/", include("api.urls")),
     # 联系表单使用单独应用，只暴露创建消息接口。
     path("api/contact/", include("contact_message.urls")),
+    # 用户注册、登录、token 刷新和当前用户信息接口。
+    path("api/auth/", include("users.urls")),
     # 首页不渲染模板，只作为 API 健康检查和入口提示。
     path("", index, name="index"),
 ]

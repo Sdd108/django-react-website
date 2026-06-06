@@ -6,6 +6,7 @@ Django 后端项目的集中配置文件。
 """
 
 import os
+from datetime import timedelta
 from pathlib import Path
 
 # 项目根路径，后续数据库、静态文件等路径都基于它拼接。
@@ -32,6 +33,7 @@ INSTALLED_APPS = [
     "django_filters",
     "api",
     "articles",
+    "users",
     "contact_message",
 ]
 
@@ -103,6 +105,8 @@ STATIC_URL = "static/"
 # 新模型默认使用 BigAutoField，避免 ID 范围过小。
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+AUTH_USER_MODEL = "users.User"
+
 # 前端开发服务器白名单；Vite 代理 API 时通常会命中这些来源。
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
@@ -138,6 +142,9 @@ CORS_ALLOW_HEADERS = [
 
 # DRF 全局默认行为：公开 API、分页、测试请求格式、过滤和搜索后端。
 REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ],
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.AllowAny",
     ],
@@ -148,4 +155,10 @@ REST_FRAMEWORK = {
         "django_filters.rest_framework.DjangoFilterBackend",
         "rest_framework.filters.SearchFilter",
     ],
+}
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(hours=1),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+    "AUTH_HEADER_TYPES": ("Bearer",),
 }

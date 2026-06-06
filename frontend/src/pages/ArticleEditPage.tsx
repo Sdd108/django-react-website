@@ -16,6 +16,8 @@ import {
 } from "@chakra-ui/react";
 import ArticleMarkdown from "@/components/ArticleMarkdown";
 import { toaster } from "@/components/ui/toaster";
+import { apiFetch, readJsonOrFallback } from "@/lib/api";
+import { useAuthStore } from "@/stores/authStore";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   FaArrowLeft,
@@ -33,6 +35,8 @@ interface ArticleFormData {
   published_date: string;
   source_url: string;
   content: string;
+  is_published: boolean;
+  is_pinned: boolean;
 }
 
 interface Article {
@@ -42,6 +46,9 @@ interface Article {
   author: string;
   published_date: string;
   source_url: string;
+  author_user: string;
+  is_published: boolean;
+  is_pinned: boolean;
 }
 
 interface FieldErrors {
@@ -51,12 +58,14 @@ interface FieldErrors {
   published_date?: string;
   source_url?: string;
   content?: string;
+  is_published?: string;
+  is_pinned?: string;
   non_field_errors?: string;
 }
 
 const fetchArticle = async (id: string): Promise<Article> => {
   // 编辑页先加载当前文章，再把 API 数据映射到表单字段。
-  const res = await fetch(`/api/articles/${id}/`);
+  const res = await apiFetch(`/articles/${id}/`);
   if (!res.ok) throw new Error("Article not found");
   return res.json();
 };
@@ -74,6 +83,8 @@ const toFormData = (article: Article): ArticleFormData => ({
   published_date: toDateTimeLocalValue(article.published_date),
   source_url: article.source_url,
   content: article.content,
+  is_published: article.is_published,
+  is_pinned: article.is_pinned,
 });
 
 const updateArticle = async ({
@@ -91,17 +102,16 @@ const updateArticle = async ({
       : data.published_date,
   };
 
-  const res = await fetch(`/api/articles/${id}/`, {
+  const res = await apiFetch(`/articles/${id}/`, {
     method: "PUT",
-    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   });
 
   if (!res.ok) {
     // DRF 校验错误通常是 JSON；非 JSON 响应兜底成表单级错误。
-    throw await res
-      .json()
-      .catch(() => ({ non_field_errors: ["Failed to update article."] }));
+    throw await readJsonOrFallback<FieldErrors>(res, {
+      non_field_errors: ["Failed to update article."],
+    });
   }
 
   return res.json();
@@ -110,6 +120,7 @@ const updateArticle = async ({
 const ArticleEditForm = ({ article }: { article: Article }) => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const currentUsername = useAuthStore((state) => state.user?.username);
   const initialForm = toFormData(article);
   const [form, setForm] = useState<ArticleFormData>(() => initialForm);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
@@ -117,7 +128,10 @@ const ArticleEditForm = ({ article }: { article: Article }) => {
   const mutation = useMutation({
     mutationFn: updateArticle,
     onSuccess: (updatedArticle) => {
-      queryClient.setQueryData(["article", String(updatedArticle.id)], updatedArticle);
+      queryClient.setQueryData(
+        ["article", String(updatedArticle.id)],
+        updatedArticle,
+      );
       queryClient.invalidateQueries({ queryKey: ["articles"] });
       toaster.create({
         title: "Article updated",
@@ -154,7 +168,11 @@ const ArticleEditForm = ({ article }: { article: Article }) => {
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
-    const { name, value } = e.target;
+    const { name, type } = e.target;
+    const value =
+      type === "checkbox"
+        ? (e.target as HTMLInputElement).checked
+        : e.target.value;
     setForm((prev) => ({ ...prev, [name]: value }));
 
     if (fieldErrors[name as keyof FieldErrors]) {
@@ -182,6 +200,24 @@ const ArticleEditForm = ({ article }: { article: Article }) => {
 
     navigate(`/articles/${article.id}`);
   };
+
+  if (article.author_user !== currentUsername) {
+    return (
+      <Container maxW="800px" py={20}>
+        <VStack gap={6} textAlign="center">
+          <Heading size="2xl">You can't edit this article</Heading>
+          <Text color="fg.muted" fontSize="lg">
+            Only the article owner can change or delete it.
+          </Text>
+          <Link to={`/articles/${article.id}`}>
+            <Button colorPalette="blue" variant="solid">
+              Back to Article
+            </Button>
+          </Link>
+        </VStack>
+      </Container>
+    );
+  }
 
   return (
     <Container maxW="1100px" py={12}>
@@ -286,6 +322,31 @@ const ArticleEditForm = ({ article }: { article: Article }) => {
                   <Field.ErrorText>{fieldErrors.source_url}</Field.ErrorText>
                 )}
               </Field.Root>
+
+              <HStack gap={6} flexWrap="wrap">
+                <label>
+                  <HStack gap={2}>
+                    <input
+                      name="is_published"
+                      type="checkbox"
+                      checked={form.is_published}
+                      onChange={handleChange}
+                    />
+                    <Text>Published</Text>
+                  </HStack>
+                </label>
+                <label>
+                  <HStack gap={2}>
+                    <input
+                      name="is_pinned"
+                      type="checkbox"
+                      checked={form.is_pinned}
+                      onChange={handleChange}
+                    />
+                    <Text>Pin to top</Text>
+                  </HStack>
+                </label>
+              </HStack>
             </VStack>
 
             <SimpleGrid columns={{ base: 1, lg: 2 }} gap={8} alignItems="start">

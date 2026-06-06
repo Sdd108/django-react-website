@@ -14,6 +14,8 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import ArticleMarkdown from "@/components/ArticleMarkdown";
+import { apiFetch, readJsonOrFallback } from "@/lib/api";
+import { useAuthStore } from "@/stores/authStore";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { FaArrowLeft, FaCalendar, FaLink, FaUser } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
@@ -25,6 +27,8 @@ interface ArticleFormData {
   published_date: string;
   source_url: string;
   content: string;
+  is_published: boolean;
+  is_pinned: boolean;
 }
 
 interface Article {
@@ -34,6 +38,8 @@ interface Article {
   author: string;
   published_date: string;
   source_url: string;
+  is_published: boolean;
+  is_pinned: boolean;
 }
 
 interface FieldErrors {
@@ -43,6 +49,8 @@ interface FieldErrors {
   published_date?: string;
   source_url?: string;
   content?: string;
+  is_published?: string;
+  is_pinned?: string;
   non_field_errors?: string;
 }
 
@@ -55,17 +63,16 @@ const createArticle = async (data: ArticleFormData): Promise<Article> => {
       : data.published_date,
   };
 
-  const res = await fetch("/api/articles/", {
+  const res = await apiFetch("/articles/", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   });
 
   if (!res.ok) {
     // DRF 通常返回 JSON 字段错误；非 JSON 错误兜底为表单级错误。
-    throw await res
-      .json()
-      .catch(() => ({ non_field_errors: ["Failed to create article."] }));
+    throw await readJsonOrFallback<FieldErrors>(res, {
+      non_field_errors: ["Failed to create article."],
+    });
   }
 
   return res.json();
@@ -74,13 +81,16 @@ const createArticle = async (data: ArticleFormData): Promise<Article> => {
 const ArticleCreatePage = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const user = useAuthStore((state) => state.user);
   // 表单状态保持为字符串，和 input/textarea 的 value 类型一致。
   const [form, setForm] = useState<ArticleFormData>({
     title: "",
-    author: "",
+    author: user?.username ?? "",
     published_date: "",
     source_url: "",
     content: "",
+    is_published: true,
+    is_pinned: false,
   });
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
 
@@ -124,7 +134,11 @@ const ArticleCreatePage = () => {
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
-    const { name, value } = e.target;
+    const { name, type } = e.target;
+    const value =
+      type === "checkbox"
+        ? (e.target as HTMLInputElement).checked
+        : e.target.value;
     setForm((prev) => ({ ...prev, [name]: value }));
 
     // 用户修改字段时清除该字段旧错误，避免已经修正后仍显示错误文案。
@@ -243,6 +257,31 @@ const ArticleCreatePage = () => {
                   <Field.ErrorText>{fieldErrors.source_url}</Field.ErrorText>
                 )}
               </Field.Root>
+
+              <HStack gap={6} flexWrap="wrap">
+                <label>
+                  <HStack gap={2}>
+                    <input
+                      name="is_published"
+                      type="checkbox"
+                      checked={form.is_published}
+                      onChange={handleChange}
+                    />
+                    <Text>Published</Text>
+                  </HStack>
+                </label>
+                <label>
+                  <HStack gap={2}>
+                    <input
+                      name="is_pinned"
+                      type="checkbox"
+                      checked={form.is_pinned}
+                      onChange={handleChange}
+                    />
+                    <Text>Pin to top</Text>
+                  </HStack>
+                </label>
+              </HStack>
             </VStack>
 
             <SimpleGrid columns={{ base: 1, lg: 2 }} gap={8} alignItems="start">

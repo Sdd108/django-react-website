@@ -12,6 +12,8 @@ import {
 } from "@chakra-ui/react";
 import ArticleMarkdown from "@/components/ArticleMarkdown";
 import { toaster } from "@/components/ui/toaster";
+import { apiFetch } from "@/lib/api";
+import { useAuthStore } from "@/stores/authStore";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   FaArrowLeft,
@@ -28,21 +30,24 @@ interface Article {
   title: string;
   content: string;
   author: string;
+  author_user: string;
   published_date: string;
   last_updated: string;
   source_url: string;
+  is_published: boolean;
+  is_pinned: boolean;
 }
 
 const fetchArticle = async (id: string): Promise<Article> => {
   // 详情页根据 URL 中的 id 请求单篇文章。
-  const res = await fetch(`/api/articles/${id}/`);
+  const res = await apiFetch(`/articles/${id}/`);
   if (!res.ok) throw new Error("Article not found");
   return res.json();
 };
 
 const deleteArticle = async (id: number): Promise<void> => {
   // 删除操作不需要响应体；失败时交给 mutation 的 onError 展示提示。
-  const res = await fetch(`/api/articles/${id}/`, { method: "DELETE" });
+  const res = await apiFetch(`/articles/${id}/`, { method: "DELETE" });
   if (!res.ok) throw new Error("Failed to delete article");
 };
 
@@ -51,6 +56,7 @@ const ArticleDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const currentUsername = useAuthStore((state) => state.user?.username);
 
   const {
     data: article,
@@ -137,6 +143,8 @@ const ArticleDetailPage = () => {
     });
   };
 
+  const isOwner = article.author_user === currentUsername;
+
   return (
     <Container maxW="800px" py={12}>
       <VStack gap={8} alignItems="stretch">
@@ -161,6 +169,11 @@ const ArticleDetailPage = () => {
             <Box as="span" display="inline-flex" alignItems="center" gap={1}>
               <FaUser size={12} />
               {article.author}
+              {article.author_user && (
+                <Text as="span" color="fg.muted">
+                  @{article.author_user}
+                </Text>
+              )}
             </Box>
             <Box as="span" display="inline-flex" alignItems="center" gap={1}>
               <FaCalendar size={12} />
@@ -186,28 +199,36 @@ const ArticleDetailPage = () => {
             </Badge>
           )}
 
-          <HStack gap={3} flexWrap="wrap" pt={2}>
-            <Link
-              to={`/articles/${article.id}/edit`}
-              style={{ textDecoration: "none" }}
-            >
-              <Button colorPalette="blue" variant="outline" size="sm">
-                <FaEdit style={{ marginRight: 6 }} />
-                Edit
+          {!article.is_published && (
+            <Badge colorPalette="orange" variant="subtle">
+              Draft
+            </Badge>
+          )}
+
+          {isOwner && (
+            <HStack gap={3} flexWrap="wrap" pt={2}>
+              <Link
+                to={`/articles/${article.id}/edit`}
+                style={{ textDecoration: "none" }}
+              >
+                <Button colorPalette="blue" variant="outline" size="sm">
+                  <FaEdit style={{ marginRight: 6 }} />
+                  Edit
+                </Button>
+              </Link>
+              <Button
+                colorPalette="red"
+                variant="outline"
+                size="sm"
+                onClick={handleDelete}
+                loading={deleteMutation.isPending}
+                loadingText="Deleting..."
+              >
+                <FaTrash style={{ marginRight: 6 }} />
+                Delete
               </Button>
-            </Link>
-            <Button
-              colorPalette="red"
-              variant="outline"
-              size="sm"
-              onClick={handleDelete}
-              loading={deleteMutation.isPending}
-              loadingText="Deleting..."
-            >
-              <FaTrash style={{ marginRight: 6 }} />
-              Delete
-            </Button>
-          </HStack>
+            </HStack>
+          )}
         </VStack>
 
         <Separator />

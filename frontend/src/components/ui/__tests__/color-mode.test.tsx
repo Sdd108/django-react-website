@@ -1,5 +1,5 @@
 import { describe, expect, it, beforeEach, afterEach, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { createTestWrapper } from "../../../__tests__/test-utils";
 
 // ============================================================================
@@ -89,7 +89,7 @@ describe("supportsSystemTheme", () => {
 
   it("returns false when media query resolves to 'not all'", () => {
     const originalMatchMedia = window.matchMedia;
-    window.matchMedia = ((query: string) =>
+    window.matchMedia = (() =>
       ({
         matches: false,
         media: "not all",
@@ -241,12 +241,16 @@ describe("ColorModeButton", () => {
   it("toggleColorMode is callable without throwing", () => {
     // 验证 useColorMode hook 在 Provider 上下文中可正常调用，
     // toggleColorMode 可被触发而不抛出异常。
-    let toggleFn: (() => void) | null = null;
-
     function TestToggle() {
       const { toggleColorMode, colorMode } = useColorMode();
-      toggleFn = toggleColorMode;
-      return <span data-testid="current-mode">{colorMode}</span>;
+      return (
+        <>
+          <span data-testid="current-mode">{colorMode}</span>
+          <button type="button" onClick={toggleColorMode}>
+            toggle
+          </button>
+        </>
+      );
     }
 
     const wrapper = createTestWrapper("/");
@@ -254,9 +258,8 @@ describe("ColorModeButton", () => {
 
     // 验证组件渲染且提供了有效的 toggle 函数
     expect(screen.getByTestId("current-mode")).toBeInTheDocument();
-    expect(toggleFn).toBeTypeOf("function");
     // 调用 toggle 不抛异常（next-themes 在 jsdom 中会尝试修改 document.documentElement）
-    expect(() => toggleFn!()).not.toThrow();
+    expect(() => fireEvent.click(screen.getByRole("button"))).not.toThrow();
   });
 
   it("renders light/dark icon based on current theme", () => {

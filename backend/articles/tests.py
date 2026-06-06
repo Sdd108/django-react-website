@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
 from rest_framework.test import APITestCase
@@ -6,10 +7,19 @@ from .models import Article
 from datetime import datetime
 
 
+User = get_user_model()
+
+
 class ArticleModelTests(TestCase):
     def setUp(self):
         # 每个模型测试都复用同一篇文章，聚焦字段和字符串表现。
+        self.user = User.objects.create_user(
+            username="owner",
+            email="owner@example.com",
+            password="StrongPass123!",
+        )
         self.article = Article.objects.create(
+            author_user=self.user,
             title="Test Article",
             content="This is a test article content",
             author="Test Author",
@@ -29,12 +39,21 @@ class ArticleModelTests(TestCase):
         self.assertEqual(self.article.author, "Test Author")
         self.assertTrue(isinstance(self.article.published_date, datetime))
         self.assertEqual(self.article.source_url, "https://example.com/test")
+        self.assertEqual(self.article.author_user, self.user)
+        self.assertTrue(self.article.is_published)
+        self.assertFalse(self.article.is_pinned)
 
 
 class ArticleAPITests(APITestCase):
     def setUp(self):
         # 准备两篇文章，用来验证列表、详情、搜索和分页基础行为。
+        self.user = User.objects.create_user(
+            username="owner",
+            email="owner@example.com",
+            password="StrongPass123!",
+        )
         self.article1 = Article.objects.create(
+            author_user=self.user,
             title="First Test Article",
             content="Content for first test article",
             author="Test Author 1",
@@ -42,6 +61,7 @@ class ArticleAPITests(APITestCase):
             source_url="https://example.com/test1",
         )
         self.article2 = Article.objects.create(
+            author_user=self.user,
             title="Second Test Article",
             content="Content for second test article",
             author="Test Author 2",
@@ -72,6 +92,7 @@ class ArticleAPITests(APITestCase):
         # 额外创建 15 篇文章，让结果超过默认页大小，从而覆盖分页逻辑。
         for i in range(15):
             Article.objects.create(
+                author_user=self.user,
                 title=f"Article {i}",
                 content=f"Content {i}",
                 author=f"Author {i}",
@@ -106,8 +127,14 @@ class ArticleAPITests(APITestCase):
 class ArticleFilterTests(APITestCase):
     def setUp(self):
         # 两篇文章分别使用不同标题和作者，确保过滤条件能明确命中单条记录。
+        self.user = User.objects.create_user(
+            username="owner",
+            email="owner@example.com",
+            password="StrongPass123!",
+        )
         self.articles = [
             Article.objects.create(
+                author_user=self.user,
                 title="Python Article",
                 content="Python content",
                 author="Python Author",
@@ -115,6 +142,7 @@ class ArticleFilterTests(APITestCase):
                 source_url="https://example.com/python",
             ),
             Article.objects.create(
+                author_user=self.user,
                 title="Django Article",
                 content="Django content",
                 author="Django Author",

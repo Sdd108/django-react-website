@@ -9,11 +9,22 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'backend.settings'
 django.setup()
 
 from backend.articles.models import Article
+from django.contrib.auth import get_user_model
 
 class ScraperPipeline:
     def process_item(self, item, spider):
+        User = get_user_model()
+        owner, created = User.objects.get_or_create(
+            username="scraper",
+            defaults={"email": "scraper@example.com"},
+        )
+        if created:
+            owner.set_unusable_password()
+            owner.save(update_fields=["password"])
+
         # spider 产出的 item 字段名与 Article 模型保持一致，pipeline 只做日期转换和持久化。
         article = Article(
+            author_user=owner,
             title=item['title'],
             content=item['content'],
             author=item['author'],

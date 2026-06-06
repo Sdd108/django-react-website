@@ -6,11 +6,22 @@ setup_django()
 
 # Django setup 完成后再导入模型，避免 settings 尚未配置导致 AppRegistryNotReady。
 from backend.articles.models import Article
+from django.contrib.auth import get_user_model
 
 class DjangoStoragePipeline:
     def process_item(self, item, spider):
+        User = get_user_model()
+        owner, created = User.objects.get_or_create(
+            username="scraper",
+            defaults={"email": "scraper@example.com"},
+        )
+        if created:
+            owner.set_unusable_password()
+            owner.save(update_fields=["password"])
+
         # 旧版 pipeline 与当前 pipeline 行为一致：把爬虫 item 转成 Article 记录。
         article = Article(
+            author_user=owner,
             title=item['title'],
             content=item['content'],
             author=item['author'],

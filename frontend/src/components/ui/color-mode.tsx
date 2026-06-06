@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 "use client";
 
 import type { IconButtonProps, SpanProps } from "@chakra-ui/react";
@@ -24,19 +25,33 @@ import { LuMoon, LuSun } from "react-icons/lu";
 const THEME_KEY = "theme";
 const THEME_TTL_MS = 3 * 60 * 60 * 1000; // 3 小时
 
-// 捕获原始 Storage.prototype 方法引用（导出供测试访问原生存储）
-const _origGetItem =
-  typeof window !== "undefined"
-    ? Object.getPrototypeOf(localStorage).getItem
-    : null;
-const _origSetItem =
-  typeof window !== "undefined"
-    ? Object.getPrototypeOf(localStorage).setItem
-    : null;
-const _origRemoveItem =
-  typeof window !== "undefined"
-    ? Object.getPrototypeOf(localStorage).removeItem
-    : null;
+// 捕获原始 localStorage 方法引用（导出供测试访问原生存储）
+const PatchedStorageProto =
+  typeof window !== "undefined" && window.Storage
+    ? window.Storage.prototype
+    : typeof window !== "undefined"
+      ? Object.getPrototypeOf(localStorage)
+      : null;
+const fallbackStorage = new Map<string, string>();
+const nativeGetItem =
+  typeof window !== "undefined" && typeof localStorage.getItem === "function"
+    ? localStorage.getItem.bind(localStorage)
+    : (key: string) => fallbackStorage.get(key) ?? null;
+const nativeSetItem =
+  typeof window !== "undefined" && typeof localStorage.setItem === "function"
+    ? localStorage.setItem.bind(localStorage)
+    : (key: string, value: string) => {
+        fallbackStorage.set(key, value);
+      };
+const nativeRemoveItem =
+  typeof window !== "undefined" && typeof localStorage.removeItem === "function"
+    ? localStorage.removeItem.bind(localStorage)
+    : (key: string) => {
+        fallbackStorage.delete(key);
+      };
+const _origGetItem = typeof window !== "undefined" ? nativeGetItem : null;
+const _origSetItem = typeof window !== "undefined" ? nativeSetItem : null;
+const _origRemoveItem = typeof window !== "undefined" ? nativeRemoveItem : null;
 
 // 导出原生引用，测试中可用于绕过 monkey-patch 直接读写原始存储
 export { _origGetItem, _origSetItem, _origRemoveItem };
@@ -47,44 +62,57 @@ if (
   _origSetItem &&
   _origRemoveItem
 ) {
-  // 通过修改 Storage.prototype 实现透明的 TTL 包装。
-  // 不能直接替换 localStorage 上的 own property —— jsdom（以及某些浏览器）
-  // 会静默忽略对 localStorage.getItem/setItem 的赋值。
-  const StorageProto = Object.getPrototypeOf(localStorage);
-
-  StorageProto.getItem = function (key: string): string | null {
-    if (key !== THEME_KEY) return _origGetItem.call(this, key);
-    const raw = _origGetItem.call(this, key);
+  const patchedGetItem = function (key: string): string | null {
+    if (key !== THEME_KEY) return _origGetItem(key);
+    const raw = _origGetItem(key);
     if (!raw) return null;
     try {
       const { value, timestamp }: { value: string; timestamp: number } =
         JSON.parse(raw);
       if (Date.now() - timestamp > THEME_TTL_MS) {
         // 超过 3 小时，清除过期记录 → next-themes 将使用 defaultTheme
-        _origRemoveItem.call(this, THEME_KEY);
+        _origRemoveItem(THEME_KEY);
         return null;
       }
       return value;
     } catch {
       // 旧格式（纯字符串），无法验证时间戳，视为过期并清除
-      _origRemoveItem.call(this, THEME_KEY);
+      _origRemoveItem(THEME_KEY);
       return null;
     }
   };
 
-  StorageProto.setItem = function (key: string, value: string): void {
-    if (key !== THEME_KEY) return _origSetItem.call(this, key, value);
-    _origSetItem.call(
-      this,
-      key,
-      JSON.stringify({ value, timestamp: Date.now() }),
-    );
+  const patchedSetItem = function (key: string, value: string): void {
+    if (key !== THEME_KEY) return _origSetItem(key, value);
+    _origSetItem(key, JSON.stringify({ value, timestamp: Date.now() }));
   };
 
-  // removeItem 保持不变，next-themes 需要清除记录时仍可用原生实现
-  StorageProto.removeItem = function (key: string): void {
-    _origRemoveItem.call(this, key);
+  const patchedRemoveItem = function (key: string): void {
+    _origRemoveItem(key);
   };
+
+  if (PatchedStorageProto) {
+    PatchedStorageProto.getItem = patchedGetItem;
+    PatchedStorageProto.setItem = patchedSetItem;
+    PatchedStorageProto.removeItem = patchedRemoveItem;
+  }
+
+  try {
+    Object.defineProperty(localStorage, "getItem", {
+      value: patchedGetItem,
+      configurable: true,
+    });
+    Object.defineProperty(localStorage, "setItem", {
+      value: patchedSetItem,
+      configurable: true,
+    });
+    Object.defineProperty(localStorage, "removeItem", {
+      value: patchedRemoveItem,
+      configurable: true,
+    });
+  } catch {
+    // Some browser implementations reject direct localStorage property defines.
+  }
 }
 
 // ============================================================================
@@ -116,7 +144,7 @@ export function supportsSystemTheme(): boolean {
 // 导出组件和 hooks
 // ============================================================================
 
-export interface ColorModeProviderProps extends ThemeProviderProps {}
+export type ColorModeProviderProps = ThemeProviderProps;
 
 export function ColorModeProvider(props: ColorModeProviderProps) {
   const canUseSystem = supportsSystemTheme();
@@ -191,7 +219,7 @@ export function ColorModeIcon() {
   return colorMode === "dark" ? <LuMoon /> : <LuSun />;
 }
 
-interface ColorModeButtonProps extends Omit<IconButtonProps, "aria-label"> {}
+type ColorModeButtonProps = Omit<IconButtonProps, "aria-label">;
 
 export const ColorModeButton = React.forwardRef<
   HTMLButtonElement,
