@@ -56,3 +56,6 @@ coverage/
 # Build artifacts
 backend/src/
 
+# Local notes and database backups
+prompts.md
+backend/db.sqlite3.*backup*
